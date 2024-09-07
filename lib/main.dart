@@ -262,7 +262,7 @@ class MainApp extends StatelessWidget {
     );
   }
 
-  // Drawer item builder for cleaner code
+  // Drawer item builder para navegación
   Widget _buildDrawerItem(IconData icon, String title, BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: const Color.fromRGBO(0, 51, 102, 1)),
@@ -272,7 +272,18 @@ class MainApp extends StatelessWidget {
             const TextStyle(fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1)),
       ),
       onTap: () {
-        Navigator.pop(context); // Close the drawer
+        Navigator.pop(context); // Cerrar el drawer primero
+
+        /* if (title == 'Alertas y notificaciones') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+            builder: (context) => const AlertasNotificacionesPage(), //! Cambiar nombre al nombre de la vista
+          ),
+         );
+      } */
+
+        // Agrega otras rutas aquí si es necesario
       },
     );
   }
