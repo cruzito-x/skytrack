@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -177,13 +175,13 @@ class MainApp extends StatelessWidget {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      _buildHourlyForecast('12:00 mn', '33° C',
+                      _buildHourlyForecast('12:00 am', '33° C',
                           'assets/images/partly-cloudy-day-fog.svg', now),
                       _buildHourlyForecast('4:00 am', '30° C',
                           'assets/images/partly-cloudy-day-fog.svg', now),
                       _buildHourlyForecast('8:00 am', '27° C',
                           'assets/images/partly-cloudy-day-fog.svg', now),
-                      _buildHourlyForecast('12:00 md', '25° C',
+                      _buildHourlyForecast('12:00 pm', '25° C',
                           'assets/images/partly-cloudy-day-fog.svg', now),
                       _buildHourlyForecast('04:00 pm', '22° C',
                           'assets/images/partly-cloudy-day-fog.svg', now),
@@ -216,9 +214,12 @@ class MainApp extends StatelessWidget {
   Widget _buildHourlyForecast(
       String time, String temp, String svgPath, DateTime now) {
     final forecastTime = _parseTime(time);
-    final isCurrent = forecastTime != null &&
-        (forecastTime.isAfter(now.subtract(const Duration(hours: 4))) &&
-            forecastTime.isBefore(now.add(const Duration(hours: 4))));
+    final bool isFuture = forecastTime != null && forecastTime.isAfter(now);
+    final bool isInNext4Hours = forecastTime != null &&
+        forecastTime.isBefore(now.add(const Duration(hours: 4)));
+
+    // El color debe marcar la próxima tarjeta dentro de las siguientes 4 horas
+    final isCurrent = isFuture && isInNext4Hours;
 
     return Container(
       width: 90,
