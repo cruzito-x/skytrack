@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   flutter_svg: ^2.0.5
   assets:
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
