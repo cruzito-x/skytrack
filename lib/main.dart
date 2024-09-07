@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,7 +13,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
+    final DateFormat formatter = DateFormat('E dd MMM');
     final hour = now.hour;
+    final String formattedTime = DateFormat('hh:mm a').format(now);
+    final String formattedDate = formatter.format(now);
     String greeting;
 
     if (hour < 12) {
@@ -116,9 +121,10 @@ class MainApp extends StatelessWidget {
                         height: 206,
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Vie. 16 Ago. | 10:20 AM',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      Text(
+                        '$formattedDate | $formattedTime',
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const Text(
                         '25° C',
