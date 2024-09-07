@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -51,9 +53,17 @@ class MainApp extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Placeholder for app logo
-                    SvgPicture.asset('utils/images/logo.png',
-                        width: 60, height: 60),
+                    // Imagen con bordes redondeados
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.asset(
+                        'utils/images/logo.png',
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit
+                            .cover, // Ajusta la imagen para que cubra todo el espacio
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     const Text(
                       'Skytrack',
