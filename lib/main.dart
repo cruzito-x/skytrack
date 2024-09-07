@@ -32,7 +32,7 @@ class MainApp extends StatelessWidget {
               builder: (BuildContext context) => IconButton(
                 icon: const Icon(Icons.menu),
                 onPressed: () {
-                  Scaffold.of(context).openEndDrawer(); // Opens the end drawer
+                  Scaffold.of(context).openEndDrawer(); // Open left drawer
                 },
               ),
             ),
@@ -44,69 +44,34 @@ class MainApp extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
+              DrawerHeader(
+                decoration: const BoxDecoration(
                   color: Color.fromRGBO(0, 51, 102, 1),
                 ),
-                child: Text(
-                  'Skytrack',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Placeholder for app logo
+                    SvgPicture.asset('utils/images/logo.png',
+                        width: 60, height: 60),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Skytrack',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.home,
-                    color: Color.fromRGBO(0, 51, 102, 1)),
-                title: const Text('Home',
-                    style: TextStyle(
-                        fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1))),
-                onTap: () {
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.notifications,
-                    color: Color.fromRGBO(0, 51, 102, 1)),
-                title: const Text('Alertas y notificaciones',
-                    style: TextStyle(
-                        fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1))),
-                onTap: () {
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.feed,
-                    color: Color.fromRGBO(0, 51, 102, 1)),
-                title: const Text('Feedback',
-                    style: TextStyle(
-                        fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1))),
-                onTap: () {
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings,
-                    color: Color.fromRGBO(0, 51, 102, 1)),
-                title: const Text('Configuración',
-                    style: TextStyle(
-                        fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1))),
-                onTap: () {
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info,
-                    color: Color.fromRGBO(0, 51, 102, 1)),
-                title: const Text('Acerca de',
-                    style: TextStyle(
-                        fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1))),
-                onTap: () {
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
+              _buildDrawerItem(Icons.home, 'Home', context),
+              _buildDrawerItem(
+                  Icons.notifications, 'Alertas y notificaciones', context),
+              _buildDrawerItem(Icons.feed, 'Feedback', context),
+              _buildDrawerItem(Icons.settings, 'Configuración', context),
+              _buildDrawerItem(Icons.info, 'Acerca de', context),
             ],
           ),
         ),
@@ -134,7 +99,6 @@ class MainApp extends StatelessWidget {
                   ]),
                 ),
                 const SizedBox(height: 20),
-                // Weather icon, date and temperature
                 Center(
                   child: Column(
                     children: [
@@ -160,7 +124,6 @@ class MainApp extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Weather details (Rain, Wind, Humidity, Temperature)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -179,7 +142,6 @@ class MainApp extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 40),
-                // Text for the 7-day forecast
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -200,7 +162,6 @@ class MainApp extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                // Today's forecast (5 hourly forecast)
                 SizedBox(
                   height: 120,
                   child: ListView(
@@ -252,7 +213,7 @@ class MainApp extends StatelessWidget {
     return Container(
       width: 90,
       padding: const EdgeInsets.all(8.0),
-      margin: const EdgeInsets.only(right: 8.0), // Ensure spacing between cards
+      margin: const EdgeInsets.only(right: 8.0),
       decoration: BoxDecoration(
         color:
             isCurrent ? const Color.fromRGBO(0, 51, 102, 1) : Colors.grey[200],
@@ -288,6 +249,21 @@ class MainApp extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  // Drawer item builder for cleaner code
+  Widget _buildDrawerItem(IconData icon, String title, BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: const Color.fromRGBO(0, 51, 102, 1)),
+      title: Text(
+        title,
+        style:
+            const TextStyle(fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1)),
+      ),
+      onTap: () {
+        Navigator.pop(context); // Close the drawer
+      },
     );
   }
 
