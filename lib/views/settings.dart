@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'style.dart'; // Importamos los estilos separados
+import '../styles/style.dart'; // Importamos los estilos separados
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

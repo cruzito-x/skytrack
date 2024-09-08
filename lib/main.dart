@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
-import 'package:skytrack/config.dart';
+import 'package:skytrack/views/settings.dart';
 import 'package:skytrack/views/notifications.dart';
 
 void main() {
