@@ -19,14 +19,14 @@ class AppStyles {
   static const sectionPadding = EdgeInsets.symmetric(vertical: 8.0);
 
   // Estilo para el título de las secciones
-  static final TextStyle sectionTitleStyle = TextStyle(
+  static const TextStyle sectionTitleStyle = TextStyle(
     color: Colors.grey,
     fontWeight: FontWeight.bold,
   );
 
   // Estilo para los ítems de configuración
-  static final TextStyle settingsItemStyle = TextStyle(
-    color: Colors.blue[900],
-    fontWeight: FontWeight.w500,
-  );
+  static const TextStyle settingsItemStyle = TextStyle(
+      color: Color.fromRGBO(0, 51, 102, 1),
+      fontSize: 16,
+      fontWeight: FontWeight.w400);
 }

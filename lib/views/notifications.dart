@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:skytrack/main.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -9,7 +7,16 @@ class NotificationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(width: 8), // Espacio entre el Lottie y el texto
+            Text(
+              'Configuración',
+              style: TextStyle(fontSize: 14),
+            )
+          ],
+        ),
       ),
       body: Center(
         child: Column(
@@ -18,13 +25,15 @@ class NotificationsPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Handle notification tap
-                // Example: Navigate to a notification detail page
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const MainApp()));
+                // Navigate back to the main screen
+                Navigator.popUntil(
+                  context,
+                  (route) =>
+                      route.isFirst, // Go back to the first route (main screen)
+                );
               },
               child: const Text('View All Notifications'),
-            )
+            ),
           ],
         ),
       ),

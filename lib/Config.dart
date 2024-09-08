@@ -7,7 +7,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Configuraciones',
       theme: AppStyles.lightTheme, // Usamos el tema desde los estilos
       home: const SettingsPage(),
     );
@@ -20,9 +19,30 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Configuración'),
-        leading: const Icon(Icons.settings),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Configuración',
+              style: TextStyle(fontSize: 16),
+            )
+          ],
+        ),
+        actions: [
+          Builder(
+            builder: (BuildContext context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer(); // Open left drawer
+              },
+            ),
+          ),
+        ],
+        leading: null,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -48,7 +68,7 @@ class SettingsPage extends StatelessWidget {
                     },
                   ),
                   SettingsItem(
-                    title: 'Cambiar unidades de medida',
+                    title: 'Establecer unidades de medida',
                     onTap: () {
                       // Acción programable
                       print('Navegar a Cambiar unidades de medida');
