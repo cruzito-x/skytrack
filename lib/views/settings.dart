@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../styles/style.dart'; // Importamos los estilos separados
+import '../styles/style.dart';
+import 'package:skytrack/utils/sidebar.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,29 +22,17 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Configuración',
-              style: TextStyle(fontSize: 16),
-            )
-          ],
-        ),
-        actions: [
-          Builder(
-            builder: (BuildContext context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer(); // Open left drawer
-              },
-            ),
-          ),
-        ],
-        leading: null,
+        title: const Text('Configuración'),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            Scaffold.of(context).openEndDrawer(); // Open left drawer
+          },
+        ),
       ),
+      endDrawer: const Sidebar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(

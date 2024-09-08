@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
 import 'package:skytrack/views/settings.dart';
 import 'package:skytrack/views/notifications.dart';
+import 'package:skytrack/utils/sidebar.dart';
 
 void main() {
   runApp(const MainApp());
@@ -65,54 +66,7 @@ class MainApp extends StatelessWidget {
           backgroundColor: Colors.white,
           foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
         ),
-        endDrawer: Builder(
-          builder: (BuildContext drawerContext) {
-            return Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  DrawerHeader(
-                    decoration: const BoxDecoration(
-                      color: Color.fromRGBO(0, 51, 102, 1),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Imagen con bordes redondeados
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.asset(
-                            'utils/images/logo.png',
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit
-                                .cover, // Ajusta la imagen para que cubra todo el espacio
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Skytrack',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  _buildDrawerItem(Icons.home, 'Home', drawerContext),
-                  _buildDrawerItem(Icons.notifications,
-                      'Alertas y notificaciones', drawerContext),
-                  _buildDrawerItem(Icons.feed, 'Feedback', drawerContext),
-                  _buildDrawerItem(
-                      Icons.settings, 'Configuración', drawerContext),
-                  _buildDrawerItem(Icons.info, 'Acerca de', drawerContext),
-                ],
-              ),
-            );
-          },
-        ),
+        endDrawer: const Sidebar(), // Usa el SidebarMenu aquí
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -235,111 +189,45 @@ class MainApp extends StatelessWidget {
       children: [
         SvgPicture.asset(svgUrl, width: 30, height: 30),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 16)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
+        ),
       ],
     );
   }
 
   // Function to build hourly forecast
   Widget _buildHourlyForecast(
-      String time, String temp, String lottiePath, DateTime now) {
-    final forecastTime = _parseTime(time);
-    final bool isFuture = forecastTime != null && forecastTime.isAfter(now);
-    final bool isInNext4Hours = forecastTime != null &&
-        forecastTime.isBefore(now.add(const Duration(hours: 4)));
-
-    // El color debe marcar la próxima tarjeta dentro de las siguientes 4 horas
-    final isCurrent = isFuture && isInNext4Hours;
-
+      String time, String temperature, String lottieUrl, DateTime now) {
     return Container(
-      width: 90,
-      padding: const EdgeInsets.all(8.0),
+      width: 100,
       margin: const EdgeInsets.only(right: 8.0),
-      decoration: BoxDecoration(
-        color:
-            isCurrent ? const Color.fromRGBO(0, 51, 102, 1) : Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
-      ),
       child: Column(
         children: [
-          Text(
-            time,
-            style: TextStyle(
-              fontSize: 14,
-              color: isCurrent
-                  ? Colors.white
-                  : const Color.fromRGBO(0, 51, 102, 1),
-            ),
-          ),
-          const SizedBox(height: 4),
           Lottie.asset(
-            lottiePath,
+            lottieUrl,
             width: 50,
             height: 50,
+            fit: BoxFit.cover,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(
-            temp,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isCurrent
-                  ? Colors.white
-                  : const Color.fromRGBO(0, 51, 102, 1),
-            ),
+            time,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          Text(
+            temperature,
+            style: const TextStyle(
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
           ),
         ],
       ),
     );
-  }
-
-  // Drawer item builder para navegación
-  // Drawer item builder para navegación
-  Widget _buildDrawerItem(IconData icon, String title, BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: const Color.fromRGBO(0, 51, 102, 1)),
-      title: Text(
-        title,
-        style:
-            const TextStyle(fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1)),
-      ),
-      onTap: () {
-        Navigator.of(context).pop(); // Cierra el Drawer
-
-        if (title == 'Alertas y notificaciones') {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const NotificationsPage()),
-          );
-        }
-
-        if (title == 'Configuración') {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const SettingsPage()),
-          );
-        }
-        // Agrega otras rutas aquí si es necesario
-      },
-    );
-  }
-
-  DateTime? _parseTime(String time) {
-    try {
-      final parts = time.split(' ');
-      final hourMinute = parts[0].split(':');
-      final hour = int.parse(hourMinute[0]);
-      final minute = int.parse(hourMinute[1]);
-      final period = parts.length > 1 ? parts[1] : '';
-
-      if (period == 'pm' && hour < 12) {
-        return DateTime.now().copyWith(hour: hour + 12, minute: minute);
-      } else if (period == 'am' && hour == 12) {
-        return DateTime.now().copyWith(hour: 0, minute: minute);
-      } else {
-        return DateTime.now().copyWith(hour: hour, minute: minute);
-      }
-    } catch (e) {
-      return null;
-    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../styles/style.dart';
+import 'package:skytrack/utils/sidebar.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -45,29 +46,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Alertas y notificaciones',
-              style: TextStyle(fontSize: 16),
-            )
-          ],
-        ),
-        actions: [
-          Builder(
-            builder: (BuildContext context) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
-            ),
-          ),
-        ],
-        leading: null,
+        title: const Text('Alertas y Notificaciones'),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            Scaffold.of(context).openEndDrawer(); // Open left drawer
+          },
+        ),
       ),
+      endDrawer: const Sidebar(),
       body: Column(
         children: [
           Expanded(
