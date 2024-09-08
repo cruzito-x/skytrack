@@ -2,16 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
-import 'package:skytrack/views/settings.dart';
-import 'package:skytrack/views/notifications.dart';
 import 'package:skytrack/utils/sidebar.dart';
 
 void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  bool _isLoading = true; // Controlador de estado de carga
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData(); // Simula una carga de datos
+  }
+
+  Future<void> _loadData() async {
+    await Future.delayed(
+        const Duration(seconds: 2)); // Simula una carga de datos
+    setState(() {
+      _isLoading = false; // Datos cargados, cambia el estado
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,118 +86,126 @@ class MainApp extends StatelessWidget {
           foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
         ),
         endDrawer: const Sidebar(), // Usa el SidebarMenu aquí
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(children: [
-                    Text(
-                      greeting,
-                      style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromRGBO(0, 51, 102, 1),
-                      ),
-                    ),
-                    Lottie.asset(
-                      star,
-                      width: 36,
-                      height: 36,
-                    ),
-                  ]),
+        body: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color.fromRGBO(0, 51, 102, 1),
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Center(
+              )
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      Lottie.asset(
-                        'assets/images/json/clear-day.json',
-                        width: 206,
-                        height: 206,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Text(
+                            greeting,
+                            style: const TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(0, 51, 102, 1),
+                            ),
+                          ),
+                          Lottie.asset(
+                            star,
+                            width: 36,
+                            height: 36,
+                          ),
+                        ]),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '$formattedDate | $formattedTime',
-                        style:
-                            const TextStyle(fontSize: 16, color: Colors.grey),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: Column(
+                          children: [
+                            Lottie.asset(
+                              'assets/images/json/clear-day.json',
+                              width: 206,
+                              height: 206,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '$formattedDate | $formattedTime',
+                              style: const TextStyle(
+                                  fontSize: 16, color: Colors.grey),
+                            ),
+                            const Text(
+                              '25° C',
+                              style: TextStyle(
+                                fontSize: 48,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromRGBO(0, 51, 102, 1),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const Text(
-                        '25° C',
-                        style: TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromRGBO(0, 51, 102, 1),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildWeatherDetail(
+                              'assets/images/thunderstorms-extreme-rain.svg',
+                              '22%',
+                              'Lluvia'),
+                          _buildWeatherDetail(
+                              'assets/images/wind.svg', '12 Km/H', 'Viento'),
+                          _buildWeatherDetail(
+                              'assets/images/humidity.svg', '17%', 'Humedad'),
+                          _buildWeatherDetail(
+                              'assets/images/thermometer-glass-celsius.svg',
+                              '12°C | 38°C',
+                              'Temperatura(s)'),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Hoy',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Color.fromRGBO(0, 51, 102, 1),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Próximos 7 días',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Color.fromRGBO(0, 51, 102, 1),
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 120,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            _buildHourlyForecast('12:00 am', '33° C',
+                                'assets/images/json/cloudy.json', now),
+                            _buildHourlyForecast('4:00 am', '30° C',
+                                'assets/images/json/rain.json', now),
+                            _buildHourlyForecast('8:00 am', '27° C',
+                                'assets/images/json/storm.json', now),
+                            _buildHourlyForecast('12:00 pm', '25° C',
+                                'assets/images/json/clear-day.json', now),
+                            _buildHourlyForecast('04:00 pm', '22° C',
+                                'assets/images/json/clear-night.json', now),
+                            _buildHourlyForecast('08:00 pm', '22° C',
+                                'assets/images/json/cloudy.json', now),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildWeatherDetail(
-                        'assets/images/thunderstorms-extreme-rain.svg',
-                        '22%',
-                        'Lluvia'),
-                    _buildWeatherDetail(
-                        'assets/images/wind.svg', '12 Km/H', 'Viento'),
-                    _buildWeatherDetail(
-                        'assets/images/humidity.svg', '17%', 'Humedad'),
-                    _buildWeatherDetail(
-                        'assets/images/thermometer-glass-celsius.svg',
-                        '12°C | 38°C',
-                        'Temperatura(s)'),
-                  ],
-                ),
-                const SizedBox(height: 40),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Hoy',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Color.fromRGBO(0, 51, 102, 1),
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Próximos 7 días',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Color.fromRGBO(0, 51, 102, 1),
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 120,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _buildHourlyForecast('12:00 am', '33° C',
-                          'assets/images/json/cloudy.json', now),
-                      _buildHourlyForecast('4:00 am', '30° C',
-                          'assets/images/json/rain.json', now),
-                      _buildHourlyForecast('8:00 am', '27° C',
-                          'assets/images/json/storm.json', now),
-                      _buildHourlyForecast('12:00 pm', '25° C',
-                          'assets/images/json/clear-day.json', now),
-                      _buildHourlyForecast('04:00 pm', '22° C',
-                          'assets/images/json/clear-night.json', now),
-                      _buildHourlyForecast('08:00 pm', '22° C',
-                          'assets/images/json/cloudy.json', now),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -189,45 +216,92 @@ class MainApp extends StatelessWidget {
       children: [
         SvgPicture.asset(svgUrl, width: 30, height: 30),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
+        Text(value, style: const TextStyle(fontSize: 16)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
   }
 
   // Function to build hourly forecast
   Widget _buildHourlyForecast(
-      String time, String temperature, String lottieUrl, DateTime now) {
+      String time, String temp, String lottiePath, DateTime now) {
+    final forecastTime = _parseTime(time);
+    if (forecastTime == null) {
+      return Container(); // Maneja el caso donde no se puede analizar el tiempo
+    }
+
+    // Ajusta la fecha del tiempo pronosticado para el caso de horas después de medianoche
+    final forecastDateTime = forecastTime.isBefore(now)
+        ? forecastTime.add(Duration(days: 1))
+        : forecastTime;
+
+    // Verifica si el pronóstico está dentro de las próximas 4 horas
+    final isFuture = forecastDateTime.isAfter(now);
+    final isInNext4Hours =
+        forecastDateTime.isBefore(now.add(const Duration(hours: 4)));
+
+    // El color debe marcar la próxima tarjeta dentro de las siguientes 4 horas
+    final isCurrent = isFuture && isInNext4Hours;
+
     return Container(
-      width: 100,
+      width: 90,
+      padding: const EdgeInsets.all(8.0),
       margin: const EdgeInsets.only(right: 8.0),
+      decoration: BoxDecoration(
+        color:
+            isCurrent ? const Color.fromRGBO(0, 51, 102, 1) : Colors.grey[100],
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Column(
         children: [
-          Lottie.asset(
-            lottieUrl,
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-          ),
-          const SizedBox(height: 8),
           Text(
             time,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            style: TextStyle(
+              fontSize: 14,
+              color: isCurrent
+                  ? Colors.white
+                  : const Color.fromRGBO(0, 51, 102, 1),
+            ),
           ),
+          const SizedBox(height: 4),
+          Lottie.asset(
+            lottiePath,
+            width: 50,
+            height: 50,
+          ),
+          const SizedBox(height: 4),
           Text(
-            temperature,
-            style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+            temp,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isCurrent
+                  ? Colors.white
+                  : const Color.fromRGBO(0, 51, 102, 1),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  DateTime? _parseTime(String time) {
+    try {
+      final parts = time.split(' ');
+      final hourMinute = parts[0].split(':');
+      final hour = int.parse(hourMinute[0]);
+      final minute = int.parse(hourMinute[1]);
+      final period = parts.length > 1 ? parts[1] : '';
+
+      if (period == 'pm' && hour < 12) {
+        return DateTime.now().copyWith(hour: hour + 12, minute: minute);
+      } else if (period == 'am' && hour == 12) {
+        return DateTime.now().copyWith(hour: 0, minute: minute);
+      } else {
+        return DateTime.now().copyWith(hour: hour, minute: minute);
+      }
+    } catch (e) {
+      return null;
+    }
   }
 }

@@ -22,15 +22,12 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Configuración'),
+        title: const Text(
+          'Configuración',
+          style: TextStyle(fontSize: 16),
+        ),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Scaffold.of(context).openEndDrawer(); // Open left drawer
-          },
-        ),
       ),
       endDrawer: const Sidebar(),
       body: LayoutBuilder(

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
-import 'package:skytrack/views/settings.dart';
 import 'package:skytrack/views/notifications.dart';
+import 'package:skytrack/views/widget.dart';
+import 'package:skytrack/views/settings.dart';
 import 'package:skytrack/main.dart';
 
 class Sidebar extends StatelessWidget {
@@ -46,6 +47,7 @@ class Sidebar extends StatelessWidget {
           _buildDrawerItem(Icons.home, 'Home', context),
           _buildDrawerItem(
               Icons.notifications, 'Alertas y notificaciones', context),
+          _buildDrawerItem(Icons.widgets, 'Widgets', context),
           _buildDrawerItem(Icons.feed, 'Feedback', context),
           _buildDrawerItem(Icons.settings, 'Configuración', context),
           _buildDrawerItem(Icons.info, 'Acerca de', context),
@@ -75,6 +77,12 @@ class Sidebar extends StatelessWidget {
         if (title == 'Alertas y notificaciones') {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const NotificationsPage()),
+          );
+        }
+
+        if (title == 'Widgets') {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const WidgetPage()),
           );
         }
 
