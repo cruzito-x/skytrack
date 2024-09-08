@@ -9,17 +9,11 @@ class WidgetPage extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Alertas y Notificaciones'),
+          title: const Text('Widgets', style: TextStyle(fontSize: 16)),
           backgroundColor: Colors.white,
           foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              Scaffold.of(context).openEndDrawer(); // Open left drawer
-            },
-          ),
         ),
         endDrawer: const Sidebar(),
         body: SingleChildScrollView(
@@ -28,7 +22,7 @@ class WidgetPage extends StatelessWidget {
             child: Column(
               children: [
                 climaSection(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 botonesMas(),
               ],
             ),

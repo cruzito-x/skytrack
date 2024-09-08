@@ -28,5 +28,5 @@ class AppStyles {
   static const TextStyle settingsItemStyle = TextStyle(
       color: Color.fromRGBO(0, 51, 102, 1),
       fontSize: 16,
-      fontWeight: FontWeight.bold);
+      fontWeight: FontWeight.w400);
 }
