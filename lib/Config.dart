@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'style.dart'; // Importamos los estilos separados
 
-void main() {
-  runApp(MyApp());
-}
-
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Configuraciones',
       theme: AppStyles.lightTheme, // Usamos el tema desde los estilos
-      home: SettingsPage(),
+      home: const SettingsPage(),
     );
   }
 }
 
 class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Configuraciones'),
-        leading: Icon(Icons.settings),
+        title: const Text('Configuración'),
+        leading: const Icon(Icons.settings),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SectionTitle(title: 'General'),
+                  const SectionTitle(title: 'General'),
                   SettingsItem(
                     title: 'Personalización',
                     onTap: () {
@@ -70,8 +70,8 @@ class SettingsPage extends StatelessWidget {
                       print('Alertas Meteorológicas: $value');
                     },
                   ),
-                  Divider(),
-                  SectionTitle(title: 'Más'),
+                  const Divider(),
+                  const SectionTitle(title: 'Más'),
                   SettingsItem(
                     title: 'Estaciones Climáticas',
                     onTap: () {
@@ -107,7 +107,7 @@ class SettingsPage extends StatelessWidget {
 class SectionTitle extends StatelessWidget {
   final String title;
 
-  const SectionTitle({required this.title});
+  const SectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +129,7 @@ class SettingsItem extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const SettingsItem({required this.title, required this.onTap});
+  const SettingsItem({super.key, required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +138,7 @@ class SettingsItem extends StatelessWidget {
         title,
         style: AppStyles.settingsItemStyle, // Estilo de ítem de configuración
       ),
-      trailing: Icon(Icons.chevron_right, color: Colors.grey),
+      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap, // Acción programable
     );
   }
@@ -150,6 +150,7 @@ class SettingsSwitchItem extends StatelessWidget {
   final ValueChanged<bool> onChanged;
 
   const SettingsSwitchItem({
+    super.key,
     required this.title,
     required this.value,
     required this.onChanged,
