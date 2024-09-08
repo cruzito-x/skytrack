@@ -28,6 +28,13 @@ class SettingsPage extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios,
+              color: Color.fromRGBO(0, 51, 102, 1)),
+          onPressed: () {
+            Navigator.pop(context); // Navega hacia atrás
+          },
+        ),
       ),
       endDrawer: const Sidebar(),
       body: LayoutBuilder(
