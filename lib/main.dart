@@ -12,6 +12,7 @@ class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MainAppState createState() => _MainAppState();
 }
 
@@ -87,7 +88,7 @@ class _MainAppState extends State<MainApp> {
         ),
         endDrawer: const Sidebar(), // Usa el SidebarMenu aquí
         body: _isLoading
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
                     Color.fromRGBO(0, 51, 102, 1),
@@ -232,7 +233,7 @@ class _MainAppState extends State<MainApp> {
 
     // Ajusta la fecha del tiempo pronosticado para el caso de horas después de medianoche
     final forecastDateTime = forecastTime.isBefore(now)
-        ? forecastTime.add(Duration(days: 1))
+        ? forecastTime.add(const Duration(days: 1))
         : forecastTime;
 
     // Verifica si el pronóstico está dentro de las próximas 4 horas
