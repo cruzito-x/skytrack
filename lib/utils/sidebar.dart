@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skytrack/views/notifications.dart';
-import 'package:skytrack/views/widget.dart';
+import 'package:skytrack/views/feedback.dart';
 import 'package:skytrack/views/settings.dart';
 import 'package:skytrack/main.dart';
 
@@ -78,9 +78,9 @@ class Sidebar extends StatelessWidget {
           );
         }
 
-        if (title == 'Widgets') {
+        if (title == 'Feedback') {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const WidgetPage()),
+            MaterialPageRoute(builder: (context) => const FeedbackPage()),
           );
         }
 

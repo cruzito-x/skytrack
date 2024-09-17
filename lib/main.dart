@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
 import 'package:skytrack/utils/sidebar.dart';
+import 'package:skytrack/views/weather.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MainApp());
@@ -17,12 +19,32 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool _isLoading = true; // Controlador de estado de carga
+  bool _isLoading = true;
+  Timer? _timer;
+  String formattedTime = '';
+  String formattedDate = '';
 
   @override
   void initState() {
     super.initState();
     _loadData(); // Simula una carga de datos
+    _startClock();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancela el Timer cuando el widget se destruye
+    super.dispose();
+  }
+
+  void _startClock() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        final now = DateTime.now();
+        formattedTime = DateFormat('hh:mm a').format(now);
+        formattedDate = DateFormat('E dd MMM').format(now);
+      });
+    });
   }
 
   Future<void> _loadData() async {
@@ -36,10 +58,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final DateFormat formatter = DateFormat('E dd MMM');
     final hour = now.hour;
-    final String formattedTime = DateFormat('hh:mm a').format(now);
-    final String formattedDate = formatter.format(now);
     String greeting;
     String star = '';
 
@@ -48,6 +67,7 @@ class _MainAppState extends State<MainApp> {
       star = 'assets/images/json/clear-day.json';
     } else if (hour < 18) {
       greeting = '¡Buenas tardes!';
+      star = 'assets/images/json/clear-day.json';
     } else {
       greeting = '¡Buenas noches!';
       star = 'assets/images/json/clear-night.json';
@@ -149,36 +169,43 @@ class _MainAppState extends State<MainApp> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           _buildWeatherDetail(
-                              'assets/images/thunderstorms-extreme-rain.svg',
-                              '22%',
-                              'Lluvia'),
+                              'assets/images/json/storm.json', '22%', 'Lluvia'),
+                          _buildWeatherDetail('assets/images/json/wind.json',
+                              '12 Km/H', 'Viento'),
                           _buildWeatherDetail(
-                              'assets/images/wind.svg', '12 Km/H', 'Viento'),
-                          _buildWeatherDetail(
-                              'assets/images/humidity.svg', '17%', 'Humedad'),
-                          _buildWeatherDetail(
-                              'assets/images/thermometer-glass-celsius.svg',
-                              '12°C | 38°C',
-                              'Temperatura(s)'),
+                              'assets/images/json/humidity.json',
+                              '17%',
+                              'Humedad'),
+                          _buildWeatherDetail('assets/images/json/hot.json',
+                              '12°C | 38°C', 'Temperatura'),
                         ],
                       ),
                       const SizedBox(height: 40),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Hoy',
                             style: TextStyle(
                                 fontSize: 14,
                                 color: Color.fromRGBO(0, 51, 102, 1),
                                 fontWeight: FontWeight.bold),
                           ),
-                          Text(
-                            'Próximos 7 días',
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Color.fromRGBO(0, 51, 102, 1),
-                                fontWeight: FontWeight.bold),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const WeatherForecastList()),
+                              );
+                            },
+                            child: const Text(
+                              'Próximos 7 días',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color.fromRGBO(0, 51, 102, 1),
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ],
                       ),
@@ -212,10 +239,10 @@ class _MainAppState extends State<MainApp> {
   }
 
   // Function to build weather details (Lluvia, Viento, etc.)
-  Widget _buildWeatherDetail(String svgUrl, String value, String label) {
+  Widget _buildWeatherDetail(String lottiePath, String value, String label) {
     return Column(
       children: [
-        SvgPicture.asset(svgUrl, width: 30, height: 30),
+        Lottie.asset(lottiePath, width: 30, height: 30),
         const SizedBox(height: 4),
         Text(value, style: const TextStyle(fontSize: 16)),
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),

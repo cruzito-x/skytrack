@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import '../styles/style.dart';
 import 'package:skytrack/utils/sidebar.dart';
 
 class NotificationsPage extends StatefulWidget {
