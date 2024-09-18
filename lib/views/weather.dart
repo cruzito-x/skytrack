@@ -8,18 +8,17 @@ import 'package:skytrack/utils/sidebar.dart';
 
 // Mapa para asociar descripciones del clima con archivos Lottie
 const Map<String, String> weatherLottieMap = {
-  'clear sky': 'assets/images/json/clear-day.json',
-  'few clouds': 'assets/images/json/few-clouds.json',
-  'scattered clouds': 'assets/images/cloudy.json',
-  'broken clouds': 'assets/images/json/cloudy-fog.json',
-  'overcast clouds': 'assets/images/json/cloudy.json',
-  'light rain': 'assets/images/json/rain.json',
-  'shower rain': 'assets/images/json/rain.json',
-  'rain': 'assets/images/json/rain.json',
-  'moderate rain': 'assets/images/json/rain.json',
-  'thunderstorm': 'assets/images/json/storm.json',
-  'snow': 'assets/images/json/snow.json',
-  'mist': 'assets/images/json/mist.json',
+  'cielo claro': 'assets/images/json/clear-day.json',
+  'algo de nubes': 'assets/images/json/few-clouds.json',
+  'nubes dispersas': 'assets/images/cloudy.json',
+  'muy nuboso': 'assets/images/json/cloudy-fog.json',
+  'nubes': 'assets/images/json/cloudy.json',
+  'lluvia ligera': 'assets/images/json/rain.json',
+  'lluvia moderada': 'assets/images/json/rain.json',
+  'lluvias intensas': 'assets/images/json/rain.json',
+  'tormenta': 'assets/images/json/storm.json',
+  'nieve': 'assets/images/json/snow.json',
+  'neblina': 'assets/images/json/mist.json',
 };
 
 // Modelo de datos para el pronóstico del clima
@@ -81,7 +80,7 @@ Future<List<WeatherForecast>> fetchWeatherForecast() async {
       '0ca7fb8919814e59836c2f5d2c86d168'; // Reemplaza con tu clave API
   const city = 'San Salvador';
   const url =
-      'http://api.openweathermap.org/data/2.5/forecast?q=$city&cnt=7&appid=$apiKey';
+      'http://api.openweathermap.org/data/2.5/forecast?q=$city&cnt=7&appid=$apiKey&lang=es';
 
   final response = await http.get(Uri.parse(url));
 
