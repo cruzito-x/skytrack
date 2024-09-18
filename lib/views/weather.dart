@@ -57,7 +57,7 @@ class WeatherForecast {
       rain = 0;
     }
 
-    double wind = json['wind']['speed'];
+    double wind = (json['wind']['speed'] as num).toDouble();
     int humidity = json['main']['humidity'];
 
     return WeatherForecast(
@@ -208,7 +208,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                             width: 150,
                             height: 150,
                           ),
-                          const SizedBox(width: 60),
+                          const SizedBox(width: 40),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -220,15 +220,16 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                         .substring(1),
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 24,
+                                  fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 8), // Espaciado vertical
                               Text(
-                                '${_nextDayForecast.minTemp.toStringAsFixed(1)} °C',
+                                '${_nextDayForecast.minTemp.toStringAsFixed(1)}° C',
                                 style: const TextStyle(
                                   color: Colors.white,
+                                  fontSize: 20,
                                 ),
                               ),
                             ],
@@ -242,7 +243,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           Column(
                             children: [
                               Text(
-                                '${_nextDayForecast.rain * 100}%',
+                                '${(_nextDayForecast.rain * 100).round() / 100}%',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -261,7 +262,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           Column(
                             children: [
                               Text(
-                                '${_nextDayForecast.wind} m/s',
+                                '${(_nextDayForecast.wind * 100).round() / 100} m/s',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -299,7 +300,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           Column(
                             children: [
                               Text(
-                                '${_nextDayForecast.minTemp.toStringAsFixed(1)} °C | ${_nextDayForecast.maxTemp.toStringAsFixed(1)} °C',
+                                '${_nextDayForecast.minTemp.toStringAsFixed(1)}° C | ${_nextDayForecast.maxTemp.toStringAsFixed(1)}° C',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -325,7 +326,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                     itemCount: forecasts.length,
                     itemBuilder: (context, index) {
                       return WeatherCard(
-                          forecast: forecasts[index], dayIndex: index + 1);
+                          forecast: forecasts[index + 1], dayIndex: index + 1);
                     },
                   ),
                 ),
