@@ -32,7 +32,7 @@ class Sidebar extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'Skytrack',
+                  'SkyTrack',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
