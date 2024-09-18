@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:skytrack/utils/sidebar.dart';
 import 'package:skytrack/views/weather.dart';
 import 'dart:async';
@@ -10,7 +12,7 @@ import 'dart:async';
 const Map<String, String> weatherLottieMap = {
   'cielo claro': 'assets/images/json/clear-day.json',
   'algo de nubes': 'assets/images/json/few-clouds.json',
-  'nubes dispersas': 'assets/images/cloudy.json',
+  'nubes dispersas': 'assets/images/json/cloudy.json',
   'muy nuboso': 'assets/images/json/cloudy-fog.json',
   'nubes': 'assets/images/json/cloudy.json',
   'lluvia ligera': 'assets/images/json/rain.json',
@@ -74,11 +76,10 @@ class WeatherForecast {
 }
 
 // Función para obtener los datos del pronóstico del clima
-Future<List<WeatherForecast>> fetchWeatherForecast() async {
+Future<List<WeatherForecast>> fetchWeatherForecast(String city) async {
   const apiKey =
       '0ca7fb8919814e59836c2f5d2c86d168'; // Reemplaza con tu clave API
-  const city = 'San Salvador';
-  const url =
+  final url =
       'http://api.openweathermap.org/data/2.5/forecast?q=$city&cnt=7&appid=$apiKey&lang=es';
 
   final response = await http.get(Uri.parse(url));
@@ -124,11 +125,13 @@ class _MainScreenState extends State<MainScreen> {
   String formattedTime = '';
   String formattedDate = '';
   WeatherForecast? _currentlyForecast;
+  String _location = 'Obteniendo ubicación...';
+  List<WeatherForecast>? _hourlyForecasts;
 
   @override
   void initState() {
     super.initState();
-    _loadWeatherData();
+    _determinePosition();
     _startClock();
   }
 
@@ -138,11 +141,38 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
-  List<WeatherForecast>? _hourlyForecasts;
+  Future<void> _determinePosition() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permiso denegado
+        setState(() {
+          _location = 'Ubicación no disponible';
+        });
+        return;
+      }
+    }
 
-  Future<void> _loadWeatherData() async {
+    Position position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
+        desiredAccuracy: LocationAccuracy.high);
+
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+
+    String city = placemarks[0].locality ?? 'Ubicación desconocida';
+    setState(() {
+      _location = city;
+    });
+
+    // Cargar datos del clima usando la ciudad actual
+    _loadWeatherData(city);
+  }
+
+  Future<void> _loadWeatherData(String city) async {
     try {
-      final forecastList = await fetchWeatherForecast();
+      final forecastList = await fetchWeatherForecast(city);
       final hourlyForecasts = <WeatherForecast>[];
 
       for (var forecast in forecastList) {
@@ -162,7 +192,7 @@ class _MainScreenState extends State<MainScreen> {
 
       setState(() {
         _hourlyForecasts = hourlyForecasts;
-        _currentlyForecast = forecastList.first; // Primer pronóstico del día
+        _currentlyForecast = forecastList.first;
         _isLoading = false;
       });
     } catch (e) {
@@ -208,9 +238,9 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(width: 8),
-            const Text(
-              'San Salvador, SV',
-              style: TextStyle(fontSize: 14),
+            Text(
+              _location,
+              style: const TextStyle(fontSize: 14),
             ),
             Lottie.asset(
               'assets/images/json/pointer.json',
@@ -298,7 +328,7 @@ class _MainScreenState extends State<MainScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _buildWeatherDetail('assets/images/json/storm.json',
-                                '${_currentlyForecast!.rain}%', 'Lluvia'),
+                                '${_currentlyForecast!.rain} mm', 'Lluvia'),
                             _buildWeatherDetail('assets/images/json/wind.json',
                                 '${_currentlyForecast!.wind} m/s', 'Viento'),
                             _buildWeatherDetail(
@@ -371,10 +401,12 @@ class _MainScreenState extends State<MainScreen> {
       children: [
         Lottie.asset(lottiePath, width: 40, height: 40),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 16)),
+        Text(value,
+            style: const TextStyle(
+                fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1))),
         Text(label,
             style: const TextStyle(
-                fontSize: 12, color: Color.fromRGBO(255, 255, 255, 1))),
+                fontSize: 12, color: Color.fromRGBO(66, 66, 66, 1))),
       ],
     );
   }

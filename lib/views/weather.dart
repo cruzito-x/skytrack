@@ -4,13 +4,15 @@ import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:skytrack/utils/sidebar.dart';
 
 // Mapa para asociar descripciones del clima con archivos Lottie
 const Map<String, String> weatherLottieMap = {
   'cielo claro': 'assets/images/json/clear-day.json',
   'algo de nubes': 'assets/images/json/few-clouds.json',
-  'nubes dispersas': 'assets/images/cloudy.json',
+  'nubes dispersas': 'assets/images/json/cloudy.json',
   'muy nuboso': 'assets/images/json/cloudy-fog.json',
   'nubes': 'assets/images/json/cloudy.json',
   'lluvia ligera': 'assets/images/json/rain.json',
@@ -75,11 +77,10 @@ class WeatherForecast {
 }
 
 // Función para obtener los datos del pronóstico del clima
-Future<List<WeatherForecast>> fetchWeatherForecast() async {
+Future<List<WeatherForecast>> fetchWeatherForecast(String city) async {
   const apiKey =
       '0ca7fb8919814e59836c2f5d2c86d168'; // Reemplaza con tu clave API
-  const city = 'San Salvador';
-  const url =
+  final url =
       'http://api.openweathermap.org/data/2.5/forecast?q=$city&cnt=7&appid=$apiKey&lang=es';
 
   final response = await http.get(Uri.parse(url));
@@ -93,42 +94,6 @@ Future<List<WeatherForecast>> fetchWeatherForecast() async {
   }
 }
 
-// Widget para mostrar una tarjeta del pronóstico del clima
-class WeatherCard extends StatelessWidget {
-  final WeatherForecast forecast;
-  final int dayIndex;
-
-  const WeatherCard(
-      {super.key, required this.forecast, required this.dayIndex});
-
-  String getAbbreviatedDayName(String dateString) {
-    DateTime date = DateTime.now().add(Duration(days: dayIndex));
-    return DateFormat('E', 'es_ES').format(date);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(10),
-      child: ListTile(
-        leading: Lottie.asset(
-          forecast.lottieFile,
-          width: 50,
-          height: 50,
-        ),
-        title: Text(
-          '${getAbbreviatedDayName(forecast.date).substring(0, 1).toUpperCase() + getAbbreviatedDayName(forecast.date).substring(1)} - ${forecast.description.substring(0, 1).toUpperCase() + forecast.description.substring(1)}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          '${forecast.minTemp.toStringAsFixed(1)} °C | ${forecast.maxTemp.toStringAsFixed(1)} °C',
-          style: const TextStyle(fontSize: 14),
-        ),
-      ),
-    );
-  }
-}
-
 // Pantalla principal que muestra la lista de pronósticos del clima
 class WeatherForecastList extends StatefulWidget {
   const WeatherForecastList({super.key});
@@ -138,16 +103,25 @@ class WeatherForecastList extends StatefulWidget {
 }
 
 class _WeatherForecastListState extends State<WeatherForecastList> {
-  late Future<List<WeatherForecast>> _forecast;
+  late Future<List<WeatherForecast>> _forecast = Future.value([]);
   late WeatherForecast _nextDayForecast;
 
   @override
   void initState() {
     super.initState();
-    _forecast = fetchWeatherForecast();
+    _getLocationAndFetchWeather();
+  }
+
+  Future<void> _getLocationAndFetchWeather() async {
+    Position position = await Geolocator.getCurrentPosition();
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+    String city = placemarks[0].locality ?? 'San Salvador'; // Fallback city
 
     initializeDateFormatting('es_ES', null).then((_) {
-      _forecast = fetchWeatherForecast();
+      setState(() {
+        _forecast = fetchWeatherForecast(city);
+      });
     });
   }
 
@@ -177,7 +151,11 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
         future: _forecast,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(Color.fromRGBO(0, 51, 102, 1)),
+            ));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -215,7 +193,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                 'Mañana, ${getDayName(_nextDayForecast.date, 1).substring(0, 1).toUpperCase()}${getDayName(_nextDayForecast.date, 1).substring(1)}',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -235,7 +213,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                     _nextDayForecast.description.substring(1),
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 18,
+                                  fontSize: 16,
                                 ),
                               ),
                             ],
@@ -249,38 +227,32 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           Column(
                             children: [
                               Text(
-                                '${(_nextDayForecast.rain * 100).round() / 100}%',
+                                '${(_nextDayForecast.rain).toStringAsFixed(1)} mm',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const Text(
                                 'Lluvia',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
+                                style: TextStyle(color: Colors.white),
                               ),
                             ],
                           ),
                           Column(
                             children: [
                               Text(
-                                '${(_nextDayForecast.wind * 100).round() / 100} m/s',
+                                '${_nextDayForecast.wind.toStringAsFixed(1)} m/s',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const Text(
                                 'Viento',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
+                                style: TextStyle(color: Colors.white),
                               ),
                             ],
                           ),
@@ -290,7 +262,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                 '${_nextDayForecast.humidity}%',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -309,7 +281,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                 '${_nextDayForecast.minTemp.toStringAsFixed(1)}° C | ${_nextDayForecast.maxTemp.toStringAsFixed(1)}° C',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -329,10 +301,31 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: forecasts.length,
+                    itemCount: forecasts.length > 6 ? 6 : forecasts.length - 1,
                     itemBuilder: (context, index) {
-                      return WeatherCard(
-                          forecast: forecasts[index], dayIndex: index);
+                      final forecast = forecasts[index + 1];
+                      return ListTile(
+                        leading: Lottie.asset(
+                          forecast.lottieFile,
+                          width: 50,
+                          height: 50,
+                        ),
+                        title: Text(
+                          getDayName(forecast.date,
+                                      index + 1) // +2 para el ajuste del índice
+                                  .substring(0, 1)
+                                  .toUpperCase() +
+                              getDayName(forecast.date, index + 1).substring(1),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                            forecast.description.substring(0, 1).toUpperCase() +
+                                forecast.description.substring(1)),
+                        trailing: Text(
+                          '${forecast.minTemp.toStringAsFixed(1)}° C | ${forecast.maxTemp.toStringAsFixed(1)}° C',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      );
                     },
                   ),
                 ),
