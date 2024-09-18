@@ -6,7 +6,7 @@
 <!-- Para manejar la ubicación en segundo plano si es necesario -->
 <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
     <application
-        android:label="skytrack"
+        android:label="SkyTrack"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
