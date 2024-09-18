@@ -336,14 +336,20 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                   .substring(0, 1)
                                   .toUpperCase() +
                               getDayName(forecast.date, index + 1).substring(1),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Color.fromRGBO(0, 51, 102, 1),
+                              fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
                             forecast.description.substring(0, 1).toUpperCase() +
-                                forecast.description.substring(1)),
+                                forecast.description.substring(1),
+                            style: const TextStyle(
+                                color: Color.fromRGBO(99, 99, 99, 1))),
                         trailing: Text(
                           '${forecast.minTemp.toStringAsFixed(1)}° C | ${forecast.maxTemp.toStringAsFixed(1)}° C',
-                          style: const TextStyle(fontSize: 12),
+                          style: const TextStyle(
+                              color: Color.fromRGBO(0, 51, 102, 1),
+                              fontSize: 12),
                         ),
                       );
                     },
