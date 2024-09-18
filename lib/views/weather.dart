@@ -102,9 +102,8 @@ class WeatherCard extends StatelessWidget {
       {super.key, required this.forecast, required this.dayIndex});
 
   String getAbbreviatedDayName(String dateString) {
-    DateTime date =
-        DateTime.now().add(Duration(days: dayIndex)); // Día relativo al actual
-    return DateFormat('E', 'es_ES').format(date); // Día abreviado
+    DateTime date = DateTime.now().add(Duration(days: dayIndex));
+    return DateFormat('E', 'es_ES').format(date);
   }
 
   @override
@@ -213,23 +212,30 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                getDayName(_nextDayForecast.date, 1)
-                                        .substring(0, 1)
-                                        .toUpperCase() +
-                                    getDayName(_nextDayForecast.date, 1)
-                                        .substring(1),
+                                'Mañana, ${getDayName(_nextDayForecast.date, 1).substring(0, 1).toUpperCase()}${getDayName(_nextDayForecast.date, 1).substring(1)}',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 28,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 8), // Espaciado vertical
                               Text(
-                                '${_nextDayForecast.minTemp.toStringAsFixed(1)}° C',
+                                '${_nextDayForecast.temperature.toStringAsFixed(1)}° C',
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8), // Espaciado vertical
+                              Text(
+                                _nextDayForecast.description
+                                        .substring(0, 1)
+                                        .toUpperCase() +
+                                    _nextDayForecast.description.substring(1),
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 18,
                                 ),
                               ),
                             ],
@@ -281,7 +287,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           Column(
                             children: [
                               Text(
-                                '${_nextDayForecast.wind} m/s',
+                                '${_nextDayForecast.humidity}%',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -326,7 +332,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                     itemCount: forecasts.length,
                     itemBuilder: (context, index) {
                       return WeatherCard(
-                          forecast: forecasts[index + 1], dayIndex: index + 1);
+                          forecast: forecasts[index], dayIndex: index);
                     },
                   ),
                 ),

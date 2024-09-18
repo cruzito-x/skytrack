@@ -17,8 +17,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:
-            const Text('Comunidad y feedback', style: TextStyle(fontSize: 16)),
+        title: const Text('Feedback', style: TextStyle(fontSize: 16)),
         backgroundColor: Colors.white,
         foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
         leading: IconButton(

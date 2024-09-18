@@ -138,7 +138,6 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
-  // Carga los datos del clima actual
   List<WeatherForecast>? _hourlyForecasts;
 
   Future<void> _loadWeatherData() async {
@@ -150,11 +149,16 @@ class _MainScreenState extends State<MainScreen> {
         final forecastTime = DateTime.parse(forecast.date);
         final hour = forecastTime.hour;
 
-        // Seleccionar los datos para las horas deseadas
         if ([0, 3, 6, 9, 12, 15, 18, 21, 24].contains(hour)) {
           hourlyForecasts.add(forecast);
         }
       }
+
+      hourlyForecasts.sort((a, b) {
+        final hourA = DateTime.parse(a.date).hour;
+        final hourB = DateTime.parse(b.date).hour;
+        return hourA.compareTo(hourB);
+      });
 
       setState(() {
         _hourlyForecasts = hourlyForecasts;
@@ -296,7 +300,7 @@ class _MainScreenState extends State<MainScreen> {
                             _buildWeatherDetail('assets/images/json/storm.json',
                                 '${_currentlyForecast!.rain}%', 'Lluvia'),
                             _buildWeatherDetail('assets/images/json/wind.json',
-                                '${_currentlyForecast!.wind} Km/H', 'Viento'),
+                                '${_currentlyForecast!.wind} m/s', 'Viento'),
                             _buildWeatherDetail(
                                 'assets/images/json/humidity.json',
                                 '${_currentlyForecast!.humidity}%',
@@ -362,7 +366,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Function to build weather details (Lluvia, Viento, etc.)
   Widget _buildWeatherDetail(String lottiePath, String value, String label) {
     return Column(
       children: [
@@ -376,7 +379,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Function to build hourly forecast
   Widget _buildHourlyForecast(
       String time, String temp, String lottiePath, DateTime now) {
     final forecastTime = DateFormat('h:mm a').parse(time);
@@ -426,11 +428,8 @@ class _MainScreenState extends State<MainScreen> {
   bool _isNextInterval(DateTime forecastTime, DateTime now) {
     final currentHour = now.hour;
     final forecastHour = forecastTime.hour;
-
-    // Encuentra el próximo intervalo de 3 horas después de la hora actual
     int nextIntervalHour = (currentHour + 3 - (currentHour % 3)) % 24;
 
-    // Compara si la hora de la tarjeta es igual al próximo intervalo calculado
     return forecastHour == nextIntervalHour;
   }
 }
