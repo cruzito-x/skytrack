@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
@@ -98,11 +97,14 @@ Future<List<WeatherForecast>> fetchWeatherForecast() async {
 // Widget para mostrar una tarjeta del pronóstico del clima
 class WeatherCard extends StatelessWidget {
   final WeatherForecast forecast;
+  final int dayIndex;
 
-  const WeatherCard({super.key, required this.forecast});
+  const WeatherCard(
+      {super.key, required this.forecast, required this.dayIndex});
 
   String getAbbreviatedDayName(String dateString) {
-    DateTime date = DateTime.parse(dateString);
+    DateTime date =
+        DateTime.now().add(Duration(days: dayIndex)); // Día relativo al actual
     return DateFormat('E', 'es_ES').format(date); // Día abreviado
   }
 
@@ -134,7 +136,6 @@ class WeatherForecastList extends StatefulWidget {
   const WeatherForecastList({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _WeatherForecastListState createState() => _WeatherForecastListState();
 }
 
@@ -152,8 +153,8 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
     });
   }
 
-  String getDayName(String dateString) {
-    DateTime date = DateTime.parse(dateString);
+  String getDayName(String dateString, int dayIndex) {
+    DateTime date = DateTime.now().add(Duration(days: dayIndex));
     return DateFormat('EEEE', 'es_ES').format(date);
   }
 
@@ -213,10 +214,10 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                getDayName(_nextDayForecast.date)
+                                getDayName(_nextDayForecast.date, 1)
                                         .substring(0, 1)
                                         .toUpperCase() +
-                                    getDayName(_nextDayForecast.date)
+                                    getDayName(_nextDayForecast.date, 1)
                                         .substring(1),
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -229,18 +230,6 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                 '${_nextDayForecast.minTemp.toStringAsFixed(1)} °C',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                _nextDayForecast.description
-                                        .substring(0, 1)
-                                        .toUpperCase() +
-                                    _nextDayForecast.description.substring(1),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
                                 ),
                               ),
                             ],
@@ -292,7 +281,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           Column(
                             children: [
                               Text(
-                                '${_nextDayForecast.humidity}%',
+                                '${_nextDayForecast.wind} m/s',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -333,10 +322,12 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    children: forecasts
-                        .map((forecast) => WeatherCard(forecast: forecast))
-                        .toList(),
+                  child: ListView.builder(
+                    itemCount: forecasts.length,
+                    itemBuilder: (context, index) {
+                      return WeatherCard(
+                          forecast: forecasts[index], dayIndex: index + 1);
+                    },
                   ),
                 ),
               ],
