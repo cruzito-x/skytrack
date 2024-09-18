@@ -226,6 +226,11 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                         children: [
                           Column(
                             children: [
+                              Lottie.asset(
+                                'assets/images/json/storm.json',
+                                width: 30,
+                                height: 30,
+                              ),
                               Text(
                                 '${(_nextDayForecast.rain).toStringAsFixed(1)} mm',
                                 style: const TextStyle(
@@ -242,6 +247,11 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           ),
                           Column(
                             children: [
+                              Lottie.asset(
+                                'assets/images/json/wind.json',
+                                width: 30,
+                                height: 30,
+                              ),
                               Text(
                                 '${_nextDayForecast.wind.toStringAsFixed(1)} m/s',
                                 style: const TextStyle(
@@ -258,6 +268,11 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           ),
                           Column(
                             children: [
+                              Lottie.asset(
+                                'assets/images/json/humidity.json',
+                                width: 30,
+                                height: 30,
+                              ),
                               Text(
                                 '${_nextDayForecast.humidity}%',
                                 style: const TextStyle(
@@ -277,6 +292,11 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           ),
                           Column(
                             children: [
+                              Lottie.asset(
+                                'assets/images/json/hot.json',
+                                width: 30,
+                                height: 30,
+                              ),
                               Text(
                                 '${_nextDayForecast.minTemp.toStringAsFixed(1)}° C | ${_nextDayForecast.maxTemp.toStringAsFixed(1)}° C',
                                 style: const TextStyle(
@@ -286,7 +306,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                 ),
                               ),
                               const Text(
-                                'Temperaturas',
+                                'Temperatura',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 14,
