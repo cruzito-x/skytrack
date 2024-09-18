@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
 import 'package:skytrack/utils/sidebar.dart';
@@ -10,15 +9,30 @@ void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _MainAppState createState() => _MainAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MainScreen(),
+    );
+  }
 }
 
-class _MainAppState extends State<MainApp> {
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
   bool _isLoading = true;
   Timer? _timer;
   String formattedTime = '';
@@ -27,7 +41,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    _loadData(); // Simula una carga de datos
+    _loadData();
     _startClock();
   }
 
@@ -49,7 +63,7 @@ class _MainAppState extends State<MainApp> {
 
   Future<void> _loadData() async {
     await Future.delayed(
-        const Duration(seconds: 2)); // Simula una carga de datos
+        const Duration(seconds: 3)); // Simula una carga de datos
     setState(() {
       _isLoading = false; // Datos cargados, cambia el estado
     });
@@ -73,168 +87,163 @@ class _MainAppState extends State<MainApp> {
       star = 'assets/images/json/clear-night.json';
     }
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(width: 8), // Espacio entre el Lottie y el texto
-              const Text(
-                'San Salvador, SV',
-                style: TextStyle(fontSize: 14),
-              ),
-              Lottie.asset(
-                'assets/images/json/pointer.json', // Asegúrate de reemplazar esto con la ruta correcta a tu archivo Lottie
-                width: 30, // Ajusta el tamaño según sea necesario
-                height: 30,
-              ),
-            ],
-          ),
-          actions: [
-            Builder(
-              builder: (BuildContext context) => IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.of(context).openEndDrawer(); // Open left drawer
-                },
-              ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(width: 8), // Espacio entre el Lottie y el texto
+            const Text(
+              'San Salvador, SV',
+              style: TextStyle(fontSize: 14),
+            ),
+            Lottie.asset(
+              'assets/images/json/pointer.json',
+              width: 30,
+              height: 30,
             ),
           ],
-          backgroundColor: Colors.white,
-          foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
         ),
-        endDrawer: const Sidebar(), // Usa el SidebarMenu aquí
-        body: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromRGBO(0, 51, 102, 1),
-                  ),
+        actions: [
+          Builder(
+            builder: (BuildContext context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer(); // Open end drawer
+              },
+            ),
+          ),
+        ],
+        backgroundColor: Colors.white,
+        foregroundColor: const Color.fromRGBO(0, 51, 102, 1),
+      ),
+      endDrawer: const Sidebar(),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color.fromRGBO(0, 51, 102, 1),
                 ),
-              )
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(children: [
+              ),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Row(children: [
+                        Text(
+                          greeting,
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromRGBO(0, 51, 102, 1),
+                          ),
+                        ),
+                        Lottie.asset(
+                          star,
+                          width: 36,
+                          height: 36,
+                        ),
+                      ]),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Column(
+                        children: [
+                          Lottie.asset(
+                            'assets/images/json/clear-day.json',
+                            width: 206,
+                            height: 206,
+                          ),
+                          const SizedBox(height: 8),
                           Text(
-                            greeting,
+                            '$formattedDate | $formattedTime',
                             style: const TextStyle(
-                              fontSize: 36,
+                                fontSize: 16, color: Colors.grey),
+                          ),
+                          const Text(
+                            '25° C',
+                            style: TextStyle(
+                              fontSize: 48,
                               fontWeight: FontWeight.bold,
                               color: Color.fromRGBO(0, 51, 102, 1),
                             ),
                           ),
-                          Lottie.asset(
-                            star,
-                            width: 36,
-                            height: 36,
-                          ),
-                        ]),
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: Column(
-                          children: [
-                            Lottie.asset(
-                              'assets/images/json/clear-day.json',
-                              width: 206,
-                              height: 206,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '$formattedDate | $formattedTime',
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.grey),
-                            ),
-                            const Text(
-                              '25° C',
-                              style: TextStyle(
-                                fontSize: 48,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromRGBO(0, 51, 102, 1),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildWeatherDetail(
-                              'assets/images/json/storm.json', '22%', 'Lluvia'),
-                          _buildWeatherDetail('assets/images/json/wind.json',
-                              '12 Km/H', 'Viento'),
-                          _buildWeatherDetail(
-                              'assets/images/json/humidity.json',
-                              '17%',
-                              'Humedad'),
-                          _buildWeatherDetail('assets/images/json/hot.json',
-                              '12°C | 38°C', 'Temperatura'),
                         ],
                       ),
-                      const SizedBox(height: 40),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Hoy',
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildWeatherDetail(
+                            'assets/images/json/storm.json', '22%', 'Lluvia'),
+                        _buildWeatherDetail('assets/images/json/wind.json',
+                            '12 Km/H', 'Viento'),
+                        _buildWeatherDetail('assets/images/json/humidity.json',
+                            '17%', 'Humedad'),
+                        _buildWeatherDetail('assets/images/json/hot.json',
+                            '12°C | 38°C', 'Temperatura'),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Hoy',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Color.fromRGBO(0, 51, 102, 1),
+                              fontWeight: FontWeight.bold),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const WeatherForecastList()),
+                            );
+                          },
+                          child: const Text(
+                            'Próximos 7 días',
                             style: TextStyle(
                                 fontSize: 14,
                                 color: Color.fromRGBO(0, 51, 102, 1),
                                 fontWeight: FontWeight.bold),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const WeatherForecastList()),
-                              );
-                            },
-                            child: const Text(
-                              'Próximos 7 días',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color.fromRGBO(0, 51, 102, 1),
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 120,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          _buildHourlyForecast('12:00 am', '33° C',
+                              'assets/images/json/cloudy.json', now),
+                          _buildHourlyForecast('4:00 am', '30° C',
+                              'assets/images/json/rain.json', now),
+                          _buildHourlyForecast('8:00 am', '27° C',
+                              'assets/images/json/storm.json', now),
+                          _buildHourlyForecast('12:00 pm', '25° C',
+                              'assets/images/json/clear-day.json', now),
+                          _buildHourlyForecast('04:00 pm', '22° C',
+                              'assets/images/json/clear-night.json', now),
+                          _buildHourlyForecast('08:00 pm', '22° C',
+                              'assets/images/json/cloudy.json', now),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 120,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            _buildHourlyForecast('12:00 am', '33° C',
-                                'assets/images/json/cloudy.json', now),
-                            _buildHourlyForecast('4:00 am', '30° C',
-                                'assets/images/json/rain.json', now),
-                            _buildHourlyForecast('8:00 am', '27° C',
-                                'assets/images/json/storm.json', now),
-                            _buildHourlyForecast('12:00 pm', '25° C',
-                                'assets/images/json/clear-day.json', now),
-                            _buildHourlyForecast('04:00 pm', '22° C',
-                                'assets/images/json/clear-night.json', now),
-                            _buildHourlyForecast('08:00 pm', '22° C',
-                                'assets/images/json/cloudy.json', now),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-      ),
+            ),
     );
   }
 
@@ -242,7 +251,7 @@ class _MainAppState extends State<MainApp> {
   Widget _buildWeatherDetail(String lottiePath, String value, String label) {
     return Column(
       children: [
-        Lottie.asset(lottiePath, width: 30, height: 30),
+        Lottie.asset(lottiePath, width: 40, height: 40),
         const SizedBox(height: 4),
         Text(value, style: const TextStyle(fontSize: 16)),
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
@@ -291,13 +300,11 @@ class _MainAppState extends State<MainApp> {
                   : const Color.fromRGBO(0, 51, 102, 1),
             ),
           ),
-          const SizedBox(height: 4),
           Lottie.asset(
             lottiePath,
             width: 50,
             height: 50,
           ),
-          const SizedBox(height: 4),
           Text(
             temp,
             style: TextStyle(
