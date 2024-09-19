@@ -1,6 +1,6 @@
 {
-    "name": "skytrack",
-    "short_name": "skytrack",
+    "name": "SkyTrack",
+    "short_name": "SkyTrack",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

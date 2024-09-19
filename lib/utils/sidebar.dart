@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skytrack/views/notifications.dart';
-import 'package:skytrack/views/widget.dart';
+import 'package:skytrack/views/feedback.dart';
 import 'package:skytrack/views/settings.dart';
 import 'package:skytrack/main.dart';
 
@@ -32,7 +32,7 @@ class Sidebar extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'Skytrack',
+                  'SkyTrack',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -45,8 +45,8 @@ class Sidebar extends StatelessWidget {
           _buildDrawerItem(Icons.home, 'Home', context),
           _buildDrawerItem(
               Icons.notifications, 'Alertas y notificaciones', context),
-          _buildDrawerItem(Icons.widgets, 'Widgets', context),
-          _buildDrawerItem(Icons.feed, 'Feedback', context),
+          // _buildDrawerItem(Icons.widgets, 'Widgets', context),
+          _buildDrawerItem(Icons.chat, 'Feedback', context),
           _buildDrawerItem(Icons.settings, 'Configuración', context),
           _buildDrawerItem(Icons.info, 'Acerca de', context),
         ],
@@ -78,9 +78,9 @@ class Sidebar extends StatelessWidget {
           );
         }
 
-        if (title == 'Widgets') {
+        if (title == 'Feedback') {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const WidgetPage()),
+            MaterialPageRoute(builder: (context) => const FeedbackPage()),
           );
         }
 
@@ -89,7 +89,6 @@ class Sidebar extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const SettingsPage()),
           );
         }
-        // Agrega otras rutas aquí si es necesario
       },
     );
   }
