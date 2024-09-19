@@ -343,8 +343,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                         subtitle: Text(
                             forecast.description.substring(0, 1).toUpperCase() +
                                 forecast.description.substring(1),
-                            style: const TextStyle(
-                                color: Color.fromRGBO(99, 99, 99, 1))),
+                            style: const TextStyle(color: Colors.grey)),
                         trailing: Text(
                           '${forecast.minTemp.toStringAsFixed(1)}° C | ${forecast.maxTemp.toStringAsFixed(1)}° C',
                           style: const TextStyle(
