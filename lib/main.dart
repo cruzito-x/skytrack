@@ -162,11 +162,11 @@ class _MainScreenState extends State<MainScreen> {
         await placemarkFromCoordinates(position.latitude, position.longitude);
 
     String city = placemarks[0].locality ?? 'Ubicación desconocida';
+    String country = placemarks[0].country ?? '';
     setState(() {
-      _location = city;
+      _location = '$city, $country';
     });
 
-    // Cargar datos del clima usando la ciudad actual
     _loadWeatherData(city);
   }
 
@@ -179,16 +179,10 @@ class _MainScreenState extends State<MainScreen> {
         final forecastTime = DateTime.parse(forecast.date);
         final hour = forecastTime.hour;
 
-        if ([0, 3, 6, 9, 12, 15, 18, 21, 24].contains(hour)) {
+        if ([0, 3, 6, 9, 12, 15, 18, 21].contains(hour)) {
           hourlyForecasts.add(forecast);
         }
       }
-
-      hourlyForecasts.sort((a, b) {
-        final hourA = DateTime.parse(a.date).hour;
-        final hourB = DateTime.parse(b.date).hour;
-        return hourA.compareTo(hourB);
-      });
 
       setState(() {
         _hourlyForecasts = hourlyForecasts;
@@ -349,7 +343,7 @@ class _MainScreenState extends State<MainScreen> {
                               'Hoy',
                               style: TextStyle(
                                   fontSize: 14,
-                                  color: Color.fromRGBO(0, 51, 102, 1),
+                                  color: Colors.grey,
                                   fontWeight: FontWeight.bold),
                             ),
                             GestureDetector(
@@ -404,9 +398,7 @@ class _MainScreenState extends State<MainScreen> {
         Text(value,
             style: const TextStyle(
                 fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1))),
-        Text(label,
-            style: const TextStyle(
-                fontSize: 12, color: Color.fromRGBO(66, 66, 66, 1))),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
   }
@@ -414,14 +406,14 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildHourlyForecast(
       String time, String temp, String lottiePath, DateTime now) {
     final forecastTime = DateFormat('h:mm a').parse(time);
-    final isNextInterval = _isNextInterval(forecastTime, now);
+    final isCurrentInterval = _isCurrentInterval(forecastTime, now);
 
     return Container(
       width: 90,
       padding: const EdgeInsets.all(8.0),
       margin: const EdgeInsets.only(right: 8.0),
       decoration: BoxDecoration(
-        color: isNextInterval
+        color: isCurrentInterval
             ? const Color.fromRGBO(0, 51, 102, 1)
             : Colors.grey[100],
         borderRadius: BorderRadius.circular(10),
@@ -432,7 +424,7 @@ class _MainScreenState extends State<MainScreen> {
             time,
             style: TextStyle(
               fontSize: 14,
-              color: isNextInterval
+              color: isCurrentInterval
                   ? Colors.white
                   : const Color.fromRGBO(0, 51, 102, 1),
             ),
@@ -447,7 +439,7 @@ class _MainScreenState extends State<MainScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isNextInterval
+              color: isCurrentInterval
                   ? Colors.white
                   : const Color.fromRGBO(0, 51, 102, 1),
             ),
@@ -457,11 +449,11 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  bool _isNextInterval(DateTime forecastTime, DateTime now) {
-    final currentHour = now.hour;
-    final forecastHour = forecastTime.hour;
-    int nextIntervalHour = (currentHour + 3 - (currentHour % 3)) % 24;
+  bool _isCurrentInterval(DateTime forecastTime, DateTime now) {
+    final startHour = forecastTime.hour;
+    final endHour = (startHour + 3) % 24;
 
-    return forecastHour == nextIntervalHour;
+    return (now.hour >= startHour && now.hour < endHour) ||
+        (startHour > endHour && (now.hour >= startHour || now.hour < endHour));
   }
 }
