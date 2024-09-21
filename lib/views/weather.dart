@@ -94,7 +94,6 @@ Future<List<WeatherForecast>> fetchWeatherForecast(String city) async {
   }
 }
 
-// Pantalla principal que muestra la lista de pronósticos del clima
 class WeatherForecastList extends StatefulWidget {
   const WeatherForecastList({super.key});
 
@@ -116,7 +115,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
     Position position = await Geolocator.getCurrentPosition();
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
-    String city = placemarks[0].locality ?? 'San Salvador'; // Fallback city
+    String city = placemarks[0].locality ?? 'San Salvador';
 
     initializeDateFormatting('es_ES', null).then((_) {
       setState(() {
@@ -197,7 +196,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 8), // Espaciado vertical
+                              const SizedBox(height: 8),
                               Text(
                                 '${_nextDayForecast.temperature.toStringAsFixed(1)}° C',
                                 style: const TextStyle(
@@ -205,7 +204,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(height: 8), // Espaciado vertical
+                              const SizedBox(height: 8),
                               Text(
                                 _nextDayForecast.description
                                         .substring(0, 1)
@@ -331,8 +330,7 @@ class _WeatherForecastListState extends State<WeatherForecastList> {
                           height: 50,
                         ),
                         title: Text(
-                          getDayName(forecast.date,
-                                      index + 1) // +2 para el ajuste del índice
+                          getDayName(forecast.date, index + 1)
                                   .substring(0, 1)
                                   .toUpperCase() +
                               getDayName(forecast.date, index + 1).substring(1),
