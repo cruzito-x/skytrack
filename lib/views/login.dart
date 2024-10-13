@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MiApp());
+  runApp(const MyApp());
 }
 
-class MiApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Scaffold(
         body: PantallaLogin(),
       ),
@@ -16,6 +18,8 @@ class MiApp extends StatelessWidget {
 }
 
 class PantallaLogin extends StatelessWidget {
+  const PantallaLogin({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,45 +35,52 @@ class PantallaLogin extends StatelessWidget {
               Center(
                 child: ClipOval(
                   child: Image.asset(
-                    'utils/images/logo.png',  // Reemplaza con la ruta correcta de tu logo
-                    height: 100,        // Tamaño ajustable de la imagen
+                    'utils/images/logo.png', // Reemplaza con la ruta correcta de tu logo
+                    height: 100, // Tamaño ajustable de la imagen
                     width: 100,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              SizedBox(height: 30), // Espacio entre logo y campos de texto
+              const SizedBox(
+                  height: 30), // Espacio entre logo y campos de texto
 
               // Campo de usuario con solo borde inferior gris
-              TextField(
+              const TextField(
                 decoration: InputDecoration(
                   labelText: 'Usuario',
-                  labelStyle: TextStyle(color: Color.fromRGBO(0, 51, 102, 1)), // Color del texto
+                  labelStyle: TextStyle(
+                      color: Color.fromRGBO(0, 51, 102, 1)), // Color del texto
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey, width: 2), // Borde gris por defecto
+                    borderSide: BorderSide(
+                        color: Colors.grey, width: 2), // Borde gris por defecto
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey, width: 2), // Borde gris en foco
+                    borderSide: BorderSide(
+                        color: Colors.grey, width: 2), // Borde gris en foco
                   ),
                 ),
               ),
-              SizedBox(height: 10), // Espacio entre usuario y contraseña
+              const SizedBox(height: 10), // Espacio entre usuario y contraseña
 
               // Campo de contraseña con solo borde inferior gris
-              TextField(
+              const TextField(
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  labelStyle: TextStyle(color: Color.fromRGBO(0, 51, 102, 1)), // Color del texto
+                  labelStyle: TextStyle(
+                      color: Color.fromRGBO(0, 51, 102, 1)), // Color del texto
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey, width: 2), // Borde gris por defecto
+                    borderSide: BorderSide(
+                        color: Colors.grey, width: 2), // Borde gris por defecto
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey, width: 2), // Borde gris en foco
+                    borderSide: BorderSide(
+                        color: Colors.grey, width: 2), // Borde gris en foco
                   ),
                 ),
               ),
-              SizedBox(height: 20), // Espacio entre contraseña y botones
+              const SizedBox(height: 20), // Espacio entre contraseña y botones
 
               // Botón de Ingresar con borde azul oscuro y texto blanco
               OutlinedButton(
@@ -77,21 +88,25 @@ class PantallaLogin extends StatelessWidget {
                   // Lógica para el login
                 },
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Color.fromRGBO(0, 51, 102, 1), width: 2), // Borde azul oscuro
+                  side: const BorderSide(
+                      color: Color.fromRGBO(0, 51, 102, 1),
+                      width: 2), // Borde azul oscuro
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                    borderRadius:
+                        BorderRadius.circular(10), // Bordes redondeados
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-                child: Text(
+                child: const Text(
                   'INGRESAR',
                   style: TextStyle(
-                    color: Color.fromRGBO(0, 51, 102, 1), // Color del texto azul oscuro
+                    color: Color.fromRGBO(
+                        0, 51, 102, 1), // Color del texto azul oscuro
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              SizedBox(height: 10), // Espacio entre los botones
+              const SizedBox(height: 10), // Espacio entre los botones
 
               // Botón de Registrarse con borde azul oscuro y texto blanco
               OutlinedButton(
@@ -99,16 +114,20 @@ class PantallaLogin extends StatelessWidget {
                   // Lógica para el registro
                 },
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Color.fromRGBO(0, 51, 102, 1), width: 2), // Borde azul oscuro
+                  side: const BorderSide(
+                      color: Color.fromRGBO(0, 51, 102, 1),
+                      width: 2), // Borde azul oscuro
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                    borderRadius:
+                        BorderRadius.circular(10), // Bordes redondeados
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-                child: Text(
+                child: const Text(
                   'REGISTRARSE',
                   style: TextStyle(
-                    color: Color.fromRGBO(0, 51, 102, 1), // Color del texto azul oscuro
+                    color: Color.fromRGBO(
+                        0, 51, 102, 1), // Color del texto azul oscuro
                     fontWeight: FontWeight.bold,
                   ),
                 ),
