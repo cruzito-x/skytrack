@@ -3,12 +3,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:skytrack/utils/sidebar.dart';
 
 class FeedbackPage extends StatefulWidget {
-  // Cambiado de SurveyPage a FeedbackPage
   const FeedbackPage({super.key});
 
   @override
-  State<FeedbackPage> createState() =>
-      _FeedbackPageState(); // Cambiado de _SurveyPageState a _FeedbackPageState
+  State<FeedbackPage> createState() => _FeedbackPageState();
 }
 
 class _FeedbackPageState extends State<FeedbackPage> {
@@ -24,76 +22,101 @@ class _FeedbackPageState extends State<FeedbackPage> {
           icon: const Icon(Icons.arrow_back_ios,
               color: Color.fromRGBO(0, 51, 102, 1)),
           onPressed: () {
-            Navigator.pop(context); // Navega hacia atrás
+            Navigator.pop(context);
           },
         ),
       ),
       endDrawer: const Sidebar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Encuesta rápida',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              '¿Qué tan útil encuentras la app?',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            _buildSurveyOptions(),
-            const SizedBox(height: 20),
-            const Text(
-              'Nuestros usuarios opinan',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: _buildPieChart(), // Añadimos el gráfico circular
-            ),
-          ],
+      body: SingleChildScrollView(  // Envuelve el contenido en un ScrollView
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Encuesta rápida',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                '¿Qué tan útil encuentras la app?',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              _buildSurveyOptions(),
+              const SizedBox(height: 20),
+              const Text(
+                'Nuestros usuarios opinan',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              _buildPieChart(), // Pie chart section
+              const SizedBox(height: 20),
+              const Text(
+                'Recomendaciones',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              _buildRecommendations(), // Recommendation section
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildSurveyOptions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Column(
       children: [
-        _buildSurveyButton('Muy útil'),
-        _buildSurveyButton('Útil'),
-        _buildSurveyButton('Poco útil'),
-        _buildSurveyButton('Nada útil'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: _buildSurveyButton('Muy útil')),
+            const SizedBox(width: 10),
+            Expanded(child: _buildSurveyButton('Útil')),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: _buildSurveyButton('Poco útil')),
+            const SizedBox(width: 10),
+            Expanded(child: _buildSurveyButton('Nada útil')),
+          ],
+        ),
       ],
     );
   }
 
   Widget _buildSurveyButton(String label) {
-    return ElevatedButton(
-      onPressed: () {
-        // Acción para cada botón
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.lightBlueAccent,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-        textStyle: const TextStyle(fontSize: 14),
+    return SizedBox(
+      height: 50, // Height for the buttons
+      child: ElevatedButton(
+        onPressed: () {
+          // Action for each button
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.lightBlueAccent,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          textStyle: const TextStyle(fontSize: 14),
+        ),
+        child: Text(label),
       ),
-      child: Text(label),
     );
   }
 
   Widget _buildPieChart() {
-    return PieChart(
-      PieChartData(
-        sections: _getPieChartSections(),
-        borderData: FlBorderData(show: false),
-        centerSpaceRadius: 40, // Espacio en el centro del gráfico
-        sectionsSpace: 2, // Espacio entre las secciones del gráfico
+    return SizedBox(
+      height: 250, // Size of the chart
+      child: PieChart(
+        PieChartData(
+          sections: _getPieChartSections(),
+          borderData: FlBorderData(show: false),
+          centerSpaceRadius: 50, // Adjusted center space
+          sectionsSpace: 0, // No spacing between sections
+        ),
       ),
     );
   }
@@ -104,7 +127,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xff0293ee),
         value: 56.3,
         title: 'Muy útil\n56.3%',
-        radius: 60,
+        radius: 70, // Uniform radius
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -115,7 +138,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xfff8b250),
         value: 25.1,
         title: 'Útil\n25.1%',
-        radius: 50,
+        radius: 70, // Uniform radius
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -126,7 +149,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xffff5182),
         value: 12.7,
         title: 'Poco útil\n12.7%',
-        radius: 50,
+        radius: 70, // Uniform radius
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -137,7 +160,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xff13d38e),
         value: 7.7,
         title: 'Nada útil\n7.7%',
-        radius: 40,
+        radius: 70, // Uniform radius
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -146,4 +169,38 @@ class _FeedbackPageState extends State<FeedbackPage> {
       ),
     ];
   }
+
+  Widget _buildRecommendations() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildRecommendationItem('Utiliza ropa ligera durante los días calurosos'),
+        _buildRecommendationItem('Recuerda cargar un paraguas durante los días nublados'),
+        _buildRecommendationItem('Evita a toda costa salir durante tormentas eléctricas'),
+      ],
+    );
+  }
+
+  Widget _buildRecommendationItem(String recommendation) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(0, 51, 102, 1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          recommendation,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+        ),
+      ),
+    );
+  }
 }
+
+
+
+
+
