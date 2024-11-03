@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:skytrack/views/notifications.dart';
 import 'package:skytrack/views/feedback.dart';
 import 'package:skytrack/views/settings.dart';
-import 'package:skytrack/utils/login.dart'; // Import the login page for redirection after logout
+import 'package:skytrack/views/about_of.dart';
 import 'package:skytrack/main.dart';
 
 class Sidebar extends StatelessWidget {
@@ -87,6 +87,12 @@ class Sidebar extends StatelessWidget {
         if (title == 'Configuración') {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
+        }
+
+        if (title == 'Acerca de') {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const AboutOfPage()),
           );
         }
 
