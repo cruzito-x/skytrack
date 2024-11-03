@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:skytrack/utils/register.dart';
+import 'package:skytrack/views/feedback.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,93 +25,101 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Fondo claro
+      backgroundColor: Colors.grey[200],
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // Padding para responsividad
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Imagen del logo en un contenedor circular
               Center(
                 child: ClipOval(
                   child: Image.asset(
-                    'utils/images/logo.png', // Reemplaza con la ruta correcta de tu logo
-                    height: 100, // Tamaño ajustable de la imagen
+                    'utils/images/logo.png',
+                    height: 100,
                     width: 100,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              const SizedBox(
-                  height: 30), // Espacio entre logo y campos de texto
-
-              // Campo de usuario con solo borde inferior gris
-              const TextField(
-                decoration: InputDecoration(
+              const SizedBox(height: 30),
+              // Campo de usuario con controlador
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
                   labelText: 'Correo electrónico',
-                  labelStyle: TextStyle(
-                      color: Color.fromRGBO(0, 51, 102, 1)), // Color del texto
+                  labelStyle: TextStyle(color: Color.fromRGBO(0, 51, 102, 1)),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey, width: 2), // Borde gris por defecto
+                    borderSide: BorderSide(color: Colors.grey, width: 2),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey, width: 2), // Borde gris en foco
+                    borderSide: BorderSide(color: Colors.grey, width: 2),
                   ),
                 ),
               ),
-              const SizedBox(height: 10), // Espacio entre usuario y contraseña
-
-              // Campo de contraseña con solo borde inferior gris
-              const TextField(
+              const SizedBox(height: 10),
+              // Campo de contraseña con controlador
+              TextField(
+                controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Contraseña',
-                  labelStyle: TextStyle(
-                      color: Color.fromRGBO(0, 51, 102, 1)), // Color del texto
+                  labelStyle: TextStyle(color: Color.fromRGBO(0, 51, 102, 1)),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey, width: 2), // Borde gris por defecto
+                    borderSide: BorderSide(color: Colors.grey, width: 2),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.grey, width: 2), // Borde gris en foco
+                    borderSide: BorderSide(color: Colors.grey, width: 2),
                   ),
                 ),
               ),
-              const SizedBox(height: 40), // Espacio entre contraseña y botones
-
-              // Botón de Ingresar con borde azul oscuro y texto blanco
+              const SizedBox(height: 40),
+              // Botón de Ingresar
               OutlinedButton(
-                onPressed: () {
-                  // Lógica para el login
+                onPressed: () async {
+                  String email = emailController.text.trim();
+                  String password = passwordController.text.trim();
+
+                  try {
+                    UserCredential userCredential =
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+
+                    Navigator.pushReplacement(
+                      // ignore: use_build_context_synchronously
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const FeedbackPage()),
+                    );
+                  } on FirebaseAuthException catch (e) {
+                    print('Error: ${e.message}');
+                  }
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(
-                      color: Color.fromRGBO(0, 51, 102, 1),
-                      width: 2), // Borde azul oscuro
+                      color: Color.fromRGBO(0, 51, 102, 1), width: 2),
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(10), // Bordes redondeados
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: const Text(
                   'Iniciar Sesión',
                   style: TextStyle(
-                    color: Color.fromRGBO(
-                        0, 51, 102, 1), // Color del texto azul oscuro
+                    color: Color.fromRGBO(0, 51, 102, 1),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 10), // Espacio entre los botones
-
-              // Botón de Registrarse con borde azul oscuro y texto blanco
+              const SizedBox(height: 10),
+              // Botón de Registrarse
               OutlinedButton(
                 onPressed: () {
                   Navigator.push(
@@ -119,19 +129,16 @@ class Login extends StatelessWidget {
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(
-                      color: Color.fromRGBO(0, 51, 102, 1),
-                      width: 2), // Borde azul oscuro
+                      color: Color.fromRGBO(0, 51, 102, 1), width: 2),
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(10), // Bordes redondeados
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: const Text(
                   'Registrarse',
                   style: TextStyle(
-                    color: Color.fromRGBO(
-                        0, 51, 102, 1), // Color del texto azul oscuro
+                    color: Color.fromRGBO(0, 51, 102, 1),
                     fontWeight: FontWeight.bold,
                   ),
                 ),

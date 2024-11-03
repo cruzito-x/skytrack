@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:skytrack/utils/sidebar.dart';
 import 'package:skytrack/utils/login.dart';
+import 'package:skytrack/utils/sidebar.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -27,10 +27,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Future<void> initializeFirebase() async {
+    setState(() => _isFirebaseInitialized = false);
     await Firebase.initializeApp();
-    setState(() {
-      _isFirebaseInitialized = true;
-    });
+    setState(() => _isFirebaseInitialized = true);
     await fetchFeedbackData();
   }
 
@@ -229,7 +228,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ElevatedButton(
               onPressed: () async {
                 await _saveFeedbackToFirestore(utilidadValue);
-                // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
@@ -265,28 +263,51 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
     final String comentario = _commentController.text;
     final Map<String, dynamic> feedbackData = {
-      'id_usuario': user.uid,
       'utilidad': utilidadValue,
       'comentario': comentario,
     };
 
     try {
-      await FirebaseFirestore.instance
+      // Verificar si el usuario ya tiene un comentario
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('comentarios')
-          .add(feedbackData);
+          .where('uid', isEqualTo: user.uid)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        String docId = querySnapshot.docs[0].id;
+        await FirebaseFirestore.instance
+            .collection('comentarios')
+            .doc(docId)
+            .update(feedbackData);
+        Fluttertoast.showToast(
+          msg: "Comentario actualizado correctamente",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color.fromARGB(225, 154, 255, 154),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
+        // Si no tiene un comentario, crear uno nuevo
+        await FirebaseFirestore.instance
+            .collection('comentarios')
+            .add({'uid': user.uid, ...feedbackData});
+        Fluttertoast.showToast(
+          msg: "Comentario añadido correctamente",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color.fromARGB(225, 154, 255, 154),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+
       _commentController.clear();
       await fetchFeedbackData();
-      Fluttertoast.showToast(
-        msg: "Comentario añadido correctamente",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: const Color.fromARGB(225, 154, 255, 157),
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
     } catch (e) {
       Fluttertoast.showToast(
-        msg: "Ha ocurrido un problema al guardar el comentario",
+        msg: "Error al añadir/actualizar comentario",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.red,
