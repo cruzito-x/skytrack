@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:skytrack/main.dart';
+import 'package:skytrack/utils/login.dart';
 import 'package:skytrack/utils/sidebar.dart';
 
 class FeedbackPage extends StatefulWidget {
@@ -16,6 +19,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   String selectedOption = '';
   final TextEditingController _commentController = TextEditingController();
   bool _isFirebaseInitialized = false;
+  final List<int> _ratingsCount = [0, 0, 0, 0];
 
   @override
   void initState() {
@@ -24,10 +28,33 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Future<void> initializeFirebase() async {
+    setState(() => _isFirebaseInitialized = false);
     await Firebase.initializeApp();
-    setState(() {
-      _isFirebaseInitialized = true;
-    });
+    setState(() => _isFirebaseInitialized = true);
+    await fetchFeedbackData();
+  }
+
+  Future<void> fetchFeedbackData() async {
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('comentarios').get();
+      for (var doc in snapshot.docs) {
+        int? utilidad = doc['utilidad'];
+        if (utilidad != null && utilidad >= 1 && utilidad <= 4) {
+          _ratingsCount[utilidad - 1]++;
+        }
+      }
+      setState(() {});
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error fetching feedback data",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 
   @override
@@ -42,16 +69,16 @@ class _FeedbackPageState extends State<FeedbackPage> {
           icon: const Icon(Icons.arrow_back_ios,
               color: Color.fromRGBO(0, 51, 102, 1)),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const MainApp()),
+            );
           },
         ),
       ),
       endDrawer: const Sidebar(),
       body: _isFirebaseInitialized
           ? buildContent()
-          : const Center(
-              child:
-                  CircularProgressIndicator()), // Muestra un indicador de carga hasta que Firebase se inicialice
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -121,9 +148,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return SizedBox(
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          selectedOption = label;
-          _showFeedbackModal(value);
+        onPressed: () async {
+          User? user = FirebaseAuth.instance.currentUser;
+          if (user == null) {
+            _showLoginModal();
+          } else {
+            selectedOption = label;
+            _showFeedbackModal(value);
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.lightBlueAccent,
@@ -133,6 +165,40 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
         child: Text(label),
       ),
+    );
+  }
+
+  void _showLoginModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: SizedBox(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Column(
+              children: [
+                AppBar(
+                  title: const Text('Iniciar sesión'),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+                const Expanded(
+                  child:
+                      Login(), // Asegúrate de que Login() sea un widget expandible
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -183,7 +249,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ElevatedButton(
               onPressed: () async {
                 await _saveFeedbackToFirestore(utilidadValue);
-                // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
@@ -203,33 +268,67 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Future<void> _saveFeedbackToFirestore(int utilidadValue) async {
-    if (!_isFirebaseInitialized) return;
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      Fluttertoast.showToast(
+        msg: "Por favor, inicia sesión para enviar comentarios.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
 
     final String comentario = _commentController.text;
     final Map<String, dynamic> feedbackData = {
-      'id_usuario': 1,
       'utilidad': utilidadValue,
       'comentario': comentario,
     };
 
     try {
-      await FirebaseFirestore.instance
+      // Verificar si el usuario ya tiene un comentario
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('comentarios')
-          .add(feedbackData);
+          .where('uid', isEqualTo: user.uid)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        String docId = querySnapshot.docs[0].id;
+        await FirebaseFirestore.instance
+            .collection('comentarios')
+            .doc(docId)
+            .update(feedbackData);
+        Fluttertoast.showToast(
+          msg: "Comentario actualizado correctamente",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color.fromARGB(225, 154, 255, 154),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
+        feedbackData['uid'] = user.uid; // Agregar uid para nuevos comentarios
+        await FirebaseFirestore.instance
+            .collection('comentarios')
+            .add(feedbackData);
+        Fluttertoast.showToast(
+          msg: "Comentario enviado correctamente",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color.fromARGB(225, 154, 255, 154),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+
       _commentController.clear();
-      // Show success toast
-      Fluttertoast.showToast(
-        msg: "Comentario añadido correctamente",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      await fetchFeedbackData();
     } catch (e) {
-      // Show error toast
       Fluttertoast.showToast(
-        msg: "Ha ocurrido un problema al guardar el comentario",
+        msg: "Error al enviar el comentario: $e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.red,
@@ -240,97 +339,61 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Widget _buildPieChart() {
-    return SizedBox(
-      height: 250,
+    return AspectRatio(
+      aspectRatio: 1,
       child: PieChart(
         PieChartData(
-          sections: _getPieChartSections(),
+          sections: [
+            PieChartSectionData(
+              color: Colors.green,
+              value: _ratingsCount[0].toDouble(),
+              title: '${_ratingsCount[0]}',
+              radius: 60,
+            ),
+            PieChartSectionData(
+              color: Colors.blue,
+              value: _ratingsCount[1].toDouble(),
+              title: '${_ratingsCount[1]}',
+              radius: 60,
+            ),
+            PieChartSectionData(
+              color: Colors.orange,
+              value: _ratingsCount[2].toDouble(),
+              title: '${_ratingsCount[2]}',
+              radius: 60,
+            ),
+            PieChartSectionData(
+              color: Colors.red,
+              value: _ratingsCount[3].toDouble(),
+              title: '${_ratingsCount[3]}',
+              radius: 60,
+            ),
+          ],
           borderData: FlBorderData(show: false),
-          centerSpaceRadius: 50,
+          centerSpaceRadius: 30,
           sectionsSpace: 0,
         ),
       ),
     );
   }
 
-  List<PieChartSectionData> _getPieChartSections() {
-    return [
-      PieChartSectionData(
-        color: const Color(0xff0293ee),
-        value: 56.3,
-        title: 'Muy útil\n56.3%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      PieChartSectionData(
-        color: const Color(0xfff8b250),
-        value: 25.1,
-        title: 'Útil\n25.1%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      PieChartSectionData(
-        color: const Color(0xffff5182),
-        value: 12.7,
-        title: 'Poco útil\n12.7%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      PieChartSectionData(
-        color: const Color(0xff13d38e),
-        value: 7.7,
-        title: 'Nada útil\n7.7%',
-        radius: 70,
-        titleStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    ];
-  }
-
   Widget _buildRecommendations() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildRecommendationItem(
-            'Utiliza ropa ligera durante los días calurosos'),
-        _buildRecommendationItem(
-            'Recuerda cargar un paraguas durante los días nublados'),
-        _buildRecommendationItem(
-            'Evita a toda costa salir durante tormentas eléctricas'),
+      children: const [
+        Text(
+          '1. Mejora la usabilidad',
+          style: TextStyle(fontSize: 14),
+        ),
+        Text(
+          '2. Añade más tutoriales',
+          style: TextStyle(fontSize: 14),
+        ),
+        Text(
+          '3. Optimiza la velocidad de carga',
+          style: TextStyle(fontSize: 14),
+        ),
       ],
-    );
-  }
-
-  Widget _buildRecommendationItem(String recommendation) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(0, 51, 102, 1),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          recommendation,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
-        ),
-      ),
     );
   }
 }

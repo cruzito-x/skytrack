@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:skytrack/main.dart';
 import 'package:skytrack/utils/sidebar.dart';
+import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'dart:convert';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -12,33 +16,104 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   bool _climaSevero = false;
   bool _cambiosRepentinos = false;
+  bool _isLoading = true;
+  Position? _currentPosition;
 
-  final List<Map<String, String>> _alerts = [
-    {
-      'title': 'Tormenta severa',
-      'description': 'Lluvias fuertes esperadas a partir de las 2:00 pm.',
-      'lottieAsset': 'assets/images/json/storm.json',
-      'time': '10:25 am',
-    },
-    {
-      'title': 'Ola de calor',
-      'description': 'Temperaturas extremas durante la tarde.',
-      'lottieAsset': 'assets/images/json/hot.json',
-      'time': '07:45 am',
-    },
-    {
-      'title': 'Tormenta moderada',
-      'description': 'Lluvias esperadas para la noche.',
-      'lottieAsset': 'assets/images/json/rain-night.json',
-      'time': '10:32 pm',
-    },
-    {
-      'title': 'Frente frío',
-      'description': 'Se espera un frente frío proveniente del sur.',
-      'lottieAsset': 'assets/images/json/cold.json',
-      'time': '08:25 pm',
-    },
-  ];
+  final List<Map<String, String>> _alerts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserLocation();
+  }
+
+  Future<void> _fetchUserLocation() async {
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      _currentPosition = await Geolocator.getCurrentPosition();
+      fetchNotifications();
+    } catch (e) {
+      print("Error getting location: $e");
+    }
+  }
+
+  Future<void> fetchNotifications() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final List<Map<String, String>> newAlerts = [];
+
+    try {
+      if (_currentPosition != null) {
+        final lat = _currentPosition!.latitude;
+        final lon = _currentPosition!.longitude;
+        final earthquakeResponse = await http.get(
+          Uri.parse(
+              'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=$lat&longitude=$lon&maxradius=500&limit=10'),
+        );
+
+        if (earthquakeResponse.statusCode == 200) {
+          final earthquakeData = json.decode(earthquakeResponse.body);
+          for (var feature in earthquakeData['features']) {
+            final properties = feature['properties'];
+            final earthquakeAlert = {
+              'title': 'Terremoto ${properties['mag']}M',
+              'description':
+                  'Ubicación: ${properties['place']}, Profundidad: ${feature['geometry']['coordinates'][2]} km',
+              'lottieAsset': 'assets/images/json/earthquake.json',
+              'time': DateTime.fromMillisecondsSinceEpoch(properties['time'])
+                  .toLocal()
+                  .toString(),
+            }.map((key, value) => MapEntry(
+                key,
+                value
+                    .toString())); // Asegurarse de que todos los valores sean Strings
+
+            if (_cambiosRepentinos) {
+              newAlerts.add(earthquakeAlert);
+            }
+          }
+        }
+      }
+
+      if (_currentPosition != null) {
+        final weatherResponse = await http.get(
+          Uri.parse(
+              'https://api.tomorrow.io/v4/weather/alerts?location=${_currentPosition!.latitude},${_currentPosition!.longitude}'),
+          headers: {'apikey': 'R5nrdr3rI9QrAy3IjB5w3psC0BkubPIS'},
+        );
+        if (weatherResponse.statusCode == 200) {
+          final weatherData = json.decode(weatherResponse.body);
+          for (var alert in weatherData['alerts']) {
+            final weatherAlert = {
+              'title': alert['headline'],
+              'description': alert['description'],
+              'lottieAsset': 'assets/images/json/weather-alert.json',
+              'time': alert['start'].toString(),
+            }.map((key, value) => MapEntry(key, value.toString()));
+
+            if (_climaSevero) {
+              newAlerts.add(weatherAlert);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching notifications: $e");
+    }
+
+    setState(() {
+      _isLoading = false;
+      _alerts.clear();
+      _alerts.addAll(newAlerts.take(15));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +128,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
           icon: const Icon(Icons.arrow_back_ios,
               color: Color.fromRGBO(0, 51, 102, 1)),
           onPressed: () {
-            Navigator.pop(context); // Navega hacia atrás
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const MainApp()),
+            );
           },
         ),
       ),
@@ -61,21 +138,35 @@ class _NotificationsPageState extends State<NotificationsPage> {
       body: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _alerts.map((alert) {
-                  return Column(
-                    children: [
-                      _buildAlertCard(alert['title']!, alert['description']!,
-                          alert['lottieAsset']!, alert['time']!),
-                      const SizedBox(height: 16.0),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ),
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: Color.fromRGBO(0, 51, 102, 1),
+                    ),
+                  )
+                : _alerts.isEmpty
+                    ? const Center(
+                        child: Text("No hay datos para mostrar",
+                            style: TextStyle(fontSize: 16)),
+                      )
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _alerts.map((alert) {
+                            return Column(
+                              children: [
+                                _buildAlertCard(
+                                    alert['title']!,
+                                    alert['description']!,
+                                    alert['lottieAsset']!,
+                                    alert['time']!),
+                                const SizedBox(height: 16.0),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
           ),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -94,20 +185,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 _buildSwitch('Clima severo', _climaSevero, (value) {
                   setState(() {
                     _climaSevero = value;
+                    fetchNotifications();
                   });
                 }),
                 const SizedBox(height: 6),
                 _buildSwitch('Cambios repentinos', _cambiosRepentinos, (value) {
                   setState(() {
                     _cambiosRepentinos = value;
+                    fetchNotifications();
                   });
                 }),
                 const SizedBox(height: 20),
                 Center(
-                  // Center the button
                   child: ElevatedButton(
                     onPressed: () {
-                      // Acción al presionar el botón "Guardar cambios"
+                      // Save notification preferences action
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(0, 51, 102, 1),
@@ -174,7 +266,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: Colors.blue, // Match the style from settings.dart
+          activeColor: Colors.blue,
         ),
       ],
     );
