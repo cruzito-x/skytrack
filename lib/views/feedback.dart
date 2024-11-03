@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:skytrack/utils/sidebar.dart';
+import 'package:skytrack/utils/login.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -16,6 +18,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   String selectedOption = '';
   final TextEditingController _commentController = TextEditingController();
   bool _isFirebaseInitialized = false;
+  final List<int> _ratingsCount = [0, 0, 0, 0];
 
   @override
   void initState() {
@@ -28,6 +31,30 @@ class _FeedbackPageState extends State<FeedbackPage> {
     setState(() {
       _isFirebaseInitialized = true;
     });
+    await fetchFeedbackData();
+  }
+
+  Future<void> fetchFeedbackData() async {
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('comentarios').get();
+      for (var doc in snapshot.docs) {
+        int? utilidad = doc['utilidad'];
+        if (utilidad != null && utilidad >= 1 && utilidad <= 4) {
+          _ratingsCount[utilidad - 1]++;
+        }
+      }
+      setState(() {});
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error fetching feedback data",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 
   @override
@@ -49,9 +76,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       endDrawer: const Sidebar(),
       body: _isFirebaseInitialized
           ? buildContent()
-          : const Center(
-              child:
-                  CircularProgressIndicator()), // Muestra un indicador de carga hasta que Firebase se inicialice
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -121,9 +146,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return SizedBox(
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          selectedOption = label;
-          _showFeedbackModal(value);
+        onPressed: () async {
+          User? user = FirebaseAuth.instance.currentUser;
+          if (user == null) {
+            _showLoginModal();
+          } else {
+            selectedOption = label;
+            _showFeedbackModal(value);
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.lightBlueAccent,
@@ -133,6 +163,22 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
         child: Text(label),
       ),
+    );
+  }
+
+  void _showLoginModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: SizedBox(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: const Login(),
+          ),
+        );
+      },
     );
   }
 
@@ -203,11 +249,23 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Future<void> _saveFeedbackToFirestore(int utilidadValue) async {
-    if (!_isFirebaseInitialized) return;
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      Fluttertoast.showToast(
+        msg: "Por favor, inicia sesión para enviar comentarios.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
 
     final String comentario = _commentController.text;
     final Map<String, dynamic> feedbackData = {
-      'id_usuario': 1,
+      'id_usuario': user.uid,
       'utilidad': utilidadValue,
       'comentario': comentario,
     };
@@ -217,17 +275,16 @@ class _FeedbackPageState extends State<FeedbackPage> {
           .collection('comentarios')
           .add(feedbackData);
       _commentController.clear();
-      // Show success toast
+      await fetchFeedbackData();
       Fluttertoast.showToast(
         msg: "Comentario añadido correctamente",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
+        backgroundColor: const Color.fromARGB(225, 154, 255, 157),
         textColor: Colors.white,
         fontSize: 16.0,
       );
     } catch (e) {
-      // Show error toast
       Fluttertoast.showToast(
         msg: "Ha ocurrido un problema al guardar el comentario",
         toastLength: Toast.LENGTH_SHORT,
@@ -254,11 +311,15 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   List<PieChartSectionData> _getPieChartSections() {
+    int totalResponses = _ratingsCount.reduce((a, b) => a + b);
+    totalResponses = totalResponses > 0 ? totalResponses : 1;
+
     return [
       PieChartSectionData(
         color: const Color(0xff0293ee),
-        value: 56.3,
-        title: 'Muy útil\n56.3%',
+        value: (_ratingsCount[0] / totalResponses * 100).toDouble(),
+        title:
+            'Muy útil\n${(_ratingsCount[0] / totalResponses * 100).toStringAsFixed(1)}%',
         radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
@@ -268,8 +329,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
       ),
       PieChartSectionData(
         color: const Color(0xfff8b250),
-        value: 25.1,
-        title: 'Útil\n25.1%',
+        value: (_ratingsCount[1] / totalResponses * 100).toDouble(),
+        title:
+            'Útil\n${(_ratingsCount[1] / totalResponses * 100).toStringAsFixed(1)}%',
         radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
@@ -279,8 +341,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
       ),
       PieChartSectionData(
         color: const Color(0xffff5182),
-        value: 12.7,
-        title: 'Poco útil\n12.7%',
+        value: (_ratingsCount[2] / totalResponses * 100).toDouble(),
+        title:
+            'Poco útil\n${(_ratingsCount[2] / totalResponses * 100).toStringAsFixed(1)}%',
         radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
@@ -290,8 +353,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
       ),
       PieChartSectionData(
         color: const Color(0xff13d38e),
-        value: 7.7,
-        title: 'Nada útil\n7.7%',
+        value: (_ratingsCount[3] / totalResponses * 100).toDouble(),
+        title:
+            'Nada útil\n${(_ratingsCount[3] / totalResponses * 100).toStringAsFixed(1)}%',
         radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
@@ -328,7 +392,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
         child: Text(
           recommendation,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
     );

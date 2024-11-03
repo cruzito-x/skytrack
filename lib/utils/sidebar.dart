@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:skytrack/views/notifications.dart';
 import 'package:skytrack/views/feedback.dart';
 import 'package:skytrack/views/settings.dart';
+import 'package:skytrack/utils/login.dart'; // Import the login page for redirection after logout
 import 'package:skytrack/main.dart';
 
 class Sidebar extends StatelessWidget {
@@ -20,7 +22,6 @@ class Sidebar extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Imagen con bordes redondeados
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   child: Image.asset(
@@ -45,16 +46,15 @@ class Sidebar extends StatelessWidget {
           _buildDrawerItem(Icons.home, 'Home', context),
           _buildDrawerItem(
               Icons.notifications, 'Alertas y notificaciones', context),
-          // _buildDrawerItem(Icons.widgets, 'Widgets', context),
           _buildDrawerItem(Icons.chat, 'Feedback', context),
           _buildDrawerItem(Icons.settings, 'Configuración', context),
           _buildDrawerItem(Icons.info, 'Acerca de', context),
+          _buildDrawerItem(Icons.logout, 'Cerrar Sesión', context),
         ],
       ),
     );
   }
 
-  // Drawer item builder para navegación
   Widget _buildDrawerItem(IconData icon, String title, BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: const Color.fromRGBO(0, 51, 102, 1)),
@@ -63,7 +63,7 @@ class Sidebar extends StatelessWidget {
         style:
             const TextStyle(fontSize: 16, color: Color.fromRGBO(0, 51, 102, 1)),
       ),
-      onTap: () {
+      onTap: () async {
         Navigator.of(context).pop(); // Cierra el Drawer
 
         if (title == 'Home') {
@@ -87,6 +87,15 @@ class Sidebar extends StatelessWidget {
         if (title == 'Configuración') {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
+        }
+
+        if (title == 'Cerrar Sesión') {
+          await FirebaseAuth.instance.signOut();
+
+          // ignore: use_build_context_synchronously
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const MainApp()),
           );
         }
       },

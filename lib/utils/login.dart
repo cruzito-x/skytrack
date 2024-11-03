@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skytrack/utils/register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +12,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: Scaffold(
-        body: PantallaLogin(),
+        body: Login(),
       ),
     );
   }
 }
 
-class PantallaLogin extends StatelessWidget {
-  const PantallaLogin({super.key});
+class Login extends StatelessWidget {
+  const Login({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class PantallaLogin extends StatelessWidget {
               // Campo de usuario con solo borde inferior gris
               const TextField(
                 decoration: InputDecoration(
-                  labelText: 'Usuario',
+                  labelText: 'Correo electrónico',
                   labelStyle: TextStyle(
                       color: Color.fromRGBO(0, 51, 102, 1)), // Color del texto
                   enabledBorder: UnderlineInputBorder(
@@ -80,7 +81,7 @@ class PantallaLogin extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 20), // Espacio entre contraseña y botones
+              const SizedBox(height: 40), // Espacio entre contraseña y botones
 
               // Botón de Ingresar con borde azul oscuro y texto blanco
               OutlinedButton(
@@ -98,7 +99,7 @@ class PantallaLogin extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: const Text(
-                  'INGRESAR',
+                  'Iniciar Sesión',
                   style: TextStyle(
                     color: Color.fromRGBO(
                         0, 51, 102, 1), // Color del texto azul oscuro
@@ -111,7 +112,10 @@ class PantallaLogin extends StatelessWidget {
               // Botón de Registrarse con borde azul oscuro y texto blanco
               OutlinedButton(
                 onPressed: () {
-                  // Lógica para el registro
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Register()),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(
@@ -124,7 +128,7 @@ class PantallaLogin extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: const Text(
-                  'REGISTRARSE',
+                  'Registrarse',
                   style: TextStyle(
                     color: Color.fromRGBO(
                         0, 51, 102, 1), // Color del texto azul oscuro
