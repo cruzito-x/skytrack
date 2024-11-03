@@ -67,13 +67,13 @@ class Sidebar extends StatelessWidget {
       onTap: () async {
         Navigator.of(context).pop(); // Cierra el Drawer
 
-        if (title == 'Home') {
+        if (title == 'Inicio') {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const MainApp()),
           );
         }
 
-        if (title == 'Alertas y notificaciones') {
+        if (title == 'Alertas y Notificaciones') {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const NotificationsPage()),
           );
