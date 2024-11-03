@@ -339,61 +339,103 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Widget _buildPieChart() {
-    return AspectRatio(
-      aspectRatio: 1,
+    return SizedBox(
+      height: 250,
       child: PieChart(
         PieChartData(
-          sections: [
-            PieChartSectionData(
-              color: Colors.green,
-              value: _ratingsCount[0].toDouble(),
-              title: '${_ratingsCount[0]}',
-              radius: 60,
-            ),
-            PieChartSectionData(
-              color: Colors.blue,
-              value: _ratingsCount[1].toDouble(),
-              title: '${_ratingsCount[1]}',
-              radius: 60,
-            ),
-            PieChartSectionData(
-              color: Colors.orange,
-              value: _ratingsCount[2].toDouble(),
-              title: '${_ratingsCount[2]}',
-              radius: 60,
-            ),
-            PieChartSectionData(
-              color: Colors.red,
-              value: _ratingsCount[3].toDouble(),
-              title: '${_ratingsCount[3]}',
-              radius: 60,
-            ),
-          ],
+          sections: _getPieChartSections(),
           borderData: FlBorderData(show: false),
-          centerSpaceRadius: 30,
+          centerSpaceRadius: 50,
           sectionsSpace: 0,
         ),
       ),
     );
   }
 
+  List<PieChartSectionData> _getPieChartSections() {
+    int totalResponses = _ratingsCount.reduce((a, b) => a + b);
+    totalResponses = totalResponses > 0 ? totalResponses : 1;
+    return [
+      PieChartSectionData(
+        color: const Color(0xff0293ee),
+        value: (_ratingsCount[0] / totalResponses * 100).toDouble(),
+        title:
+            'Muy útil\n${(_ratingsCount[0] / totalResponses * 100).toStringAsFixed(1)}%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      PieChartSectionData(
+        color: const Color(0xff13d38e),
+        value: (_ratingsCount[1] / totalResponses * 100).toDouble(),
+        title:
+            'Útil\n${(_ratingsCount[1] / totalResponses * 100).toStringAsFixed(1)}%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      PieChartSectionData(
+        color: const Color(0xfff8b250),
+        value: (_ratingsCount[2] / totalResponses * 100).toDouble(),
+        title:
+            'Poco útil\n${(_ratingsCount[2] / totalResponses * 100).toStringAsFixed(1)}%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      PieChartSectionData(
+        color: const Color(0xffff5182),
+        value: (_ratingsCount[3] / totalResponses * 100).toDouble(),
+        title:
+            'Nada útil\n${(_ratingsCount[3] / totalResponses * 100).toStringAsFixed(1)}%',
+        radius: 70,
+        titleStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    ];
+  }
+
   Widget _buildRecommendations() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
-          '1. Mejora la usabilidad',
-          style: TextStyle(fontSize: 14),
-        ),
-        Text(
-          '2. Añade más tutoriales',
-          style: TextStyle(fontSize: 14),
-        ),
-        Text(
-          '3. Optimiza la velocidad de carga',
-          style: TextStyle(fontSize: 14),
-        ),
+      children: [
+        _buildRecommendationItem(
+            'Utiliza ropa ligera durante los días calurosos'),
+        _buildRecommendationItem(
+            'Recuerda cargar un paraguas durante los días nublados'),
+        _buildRecommendationItem(
+            'Evita a toda costa salir durante tormentas eléctricas'),
       ],
+    );
+  }
+
+  Widget _buildRecommendationItem(String recommendation) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(0, 51, 102, 1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          recommendation,
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+        ),
+      ),
     );
   }
 }
