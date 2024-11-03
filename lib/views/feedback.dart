@@ -27,7 +27,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
       ),
       endDrawer: const Sidebar(),
-      body: SingleChildScrollView(  // Envuelve el contenido en un ScrollView
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -50,14 +50,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              _buildPieChart(), // Pie chart section
+              _buildPieChart(),
               const SizedBox(height: 20),
               const Text(
                 'Recomendaciones',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              _buildRecommendations(), // Recommendation section
+              _buildRecommendations(),
             ],
           ),
         ),
@@ -91,10 +91,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   Widget _buildSurveyButton(String label) {
     return SizedBox(
-      height: 50, // Height for the buttons
+      height: 50,
       child: ElevatedButton(
         onPressed: () {
-          // Action for each button
+          _showFeedbackModal(label);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.lightBlueAccent,
@@ -107,15 +107,79 @@ class _FeedbackPageState extends State<FeedbackPage> {
     );
   }
 
+  void _showFeedbackModal(String option) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(16),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Bríndanos tu opinión',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.grey),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '¿Por qué nuestra app te parece $option?',
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                maxLength: 150,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Escribe aquí tu comentario...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                // Acción al enviar el comentario
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(0, 51, 102, 1),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              ),
+              child: const Text(
+                'Enviar comentarios',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildPieChart() {
     return SizedBox(
-      height: 250, // Size of the chart
+      height: 250,
       child: PieChart(
         PieChartData(
           sections: _getPieChartSections(),
           borderData: FlBorderData(show: false),
-          centerSpaceRadius: 50, // Adjusted center space
-          sectionsSpace: 0, // No spacing between sections
+          centerSpaceRadius: 50,
+          sectionsSpace: 0,
         ),
       ),
     );
@@ -127,7 +191,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xff0293ee),
         value: 56.3,
         title: 'Muy útil\n56.3%',
-        radius: 70, // Uniform radius
+        radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -138,7 +202,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xfff8b250),
         value: 25.1,
         title: 'Útil\n25.1%',
-        radius: 70, // Uniform radius
+        radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -149,7 +213,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xffff5182),
         value: 12.7,
         title: 'Poco útil\n12.7%',
-        radius: 70, // Uniform radius
+        radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -160,7 +224,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         color: const Color(0xff13d38e),
         value: 7.7,
         title: 'Nada útil\n7.7%',
-        radius: 70, // Uniform radius
+        radius: 70,
         titleStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -174,9 +238,12 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildRecommendationItem('Utiliza ropa ligera durante los días calurosos'),
-        _buildRecommendationItem('Recuerda cargar un paraguas durante los días nublados'),
-        _buildRecommendationItem('Evita a toda costa salir durante tormentas eléctricas'),
+        _buildRecommendationItem(
+            'Utiliza ropa ligera durante los días calurosos'),
+        _buildRecommendationItem(
+            'Recuerda cargar un paraguas durante los días nublados'),
+        _buildRecommendationItem(
+            'Evita a toda costa salir durante tormentas eléctricas'),
       ],
     );
   }
@@ -199,8 +266,3 @@ class _FeedbackPageState extends State<FeedbackPage> {
     );
   }
 }
-
-
-
-
-
