@@ -43,13 +43,14 @@ class Sidebar extends StatelessWidget {
               ],
             ),
           ),
-          _buildDrawerItem(Icons.home, 'Home', context),
+          _buildDrawerItem(Icons.sunny, 'Inicio', context),
           _buildDrawerItem(
-              Icons.notifications, 'Alertas y notificaciones', context),
+              Icons.notifications, 'Alertas y Notificaciones', context),
           _buildDrawerItem(Icons.chat, 'Feedback', context),
           _buildDrawerItem(Icons.settings, 'Configuración', context),
           _buildDrawerItem(Icons.info, 'Acerca de', context),
-          _buildDrawerItem(Icons.logout, 'Cerrar Sesión', context),
+          if (FirebaseAuth.instance.currentUser != null)
+            _buildDrawerItem(Icons.logout_rounded, 'Cerrar Sesión', context),
         ],
       ),
     );

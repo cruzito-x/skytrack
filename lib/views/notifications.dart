@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:skytrack/main.dart';
 import 'package:skytrack/utils/sidebar.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
@@ -127,7 +128,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
           icon: const Icon(Icons.arrow_back_ios,
               color: Color.fromRGBO(0, 51, 102, 1)),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const MainApp()),
+            );
           },
         ),
       ),

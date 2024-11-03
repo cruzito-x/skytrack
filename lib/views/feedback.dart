@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:skytrack/main.dart';
 import 'package:skytrack/utils/login.dart';
 import 'package:skytrack/utils/sidebar.dart';
 
@@ -68,7 +69,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
           icon: const Icon(Icons.arrow_back_ios,
               color: Color.fromRGBO(0, 51, 102, 1)),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const MainApp()),
+            );
           },
         ),
       ),
@@ -310,7 +313,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         msg: "Error al añadir/actualizar comentario",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromARGB(225, 236, 120, 112),
         textColor: Colors.white,
         fontSize: 16.0,
       );
@@ -349,7 +352,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
       ),
       PieChartSectionData(
-        color: const Color(0xfff8b250),
+        color: const Color(0xff13d38e),
         value: (_ratingsCount[1] / totalResponses * 100).toDouble(),
         title:
             'Útil\n${(_ratingsCount[1] / totalResponses * 100).toStringAsFixed(1)}%',
@@ -361,7 +364,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
       ),
       PieChartSectionData(
-        color: const Color(0xffff5182),
+        color: const Color(0xfff8b250),
         value: (_ratingsCount[2] / totalResponses * 100).toDouble(),
         title:
             'Poco útil\n${(_ratingsCount[2] / totalResponses * 100).toStringAsFixed(1)}%',
@@ -373,7 +376,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
       ),
       PieChartSectionData(
-        color: const Color(0xff13d38e),
+        color: const Color(0xffff5182),
         value: (_ratingsCount[3] / totalResponses * 100).toDouble(),
         title:
             'Nada útil\n${(_ratingsCount[3] / totalResponses * 100).toStringAsFixed(1)}%',

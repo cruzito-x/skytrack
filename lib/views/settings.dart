@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skytrack/main.dart';
 import '../styles/style.dart';
 import 'package:skytrack/utils/sidebar.dart';
 
@@ -32,7 +33,9 @@ class SettingsPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios,
               color: Color.fromRGBO(0, 51, 102, 1)),
           onPressed: () {
-            Navigator.pop(context); // Navega hacia atrás
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const MainApp()),
+            );
           },
         ),
       ),

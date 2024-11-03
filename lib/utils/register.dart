@@ -46,7 +46,7 @@ class _RegisterState extends State<Register> {
         msg: "Usuario registrado exitosamente",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
+        backgroundColor: const Color.fromARGB(225, 154, 255, 154),
         textColor: Colors.white,
         fontSize: 16.0,
       );
@@ -60,7 +60,7 @@ class _RegisterState extends State<Register> {
         msg: "Error al registrar: $e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromARGB(225, 236, 120, 112),
         textColor: Colors.white,
         fontSize: 16.0,
       );
