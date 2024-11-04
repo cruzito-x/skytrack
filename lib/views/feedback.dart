@@ -174,27 +174,39 @@ class _FeedbackPageState extends State<FeedbackPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-          child: SizedBox(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: Column(
-              children: [
-                AppBar(
-                  title: const Text('Iniciar sesión'),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ),
-                const Expanded(
-                  child:
-                      Login(), // Asegúrate de que Login() sea un widget expandible
-                ),
-              ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0), // Esquinas redondeadas
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0), // Esquinas redondeadas
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: Column(
+                children: [
+                  AppBar(
+                    title: const Text('Inicia Sesión o Regístrate',
+                        style: TextStyle(fontSize: 16)),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+                    automaticallyImplyLeading:
+                        false, // Oculta la flecha de regreso
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                  const Expanded(
+                    child:
+                        Login(), // Asegúrate de que Login() sea un widget expandible
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -205,15 +217,26 @@ class _FeedbackPageState extends State<FeedbackPage> {
   void _showFeedbackModal(int utilidadValue) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           contentPadding: const EdgeInsets.all(16),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Bríndanos tu opinión',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              AppBar(
+                title: const Text('Brindanos tu opinión',
+                    style: TextStyle(fontSize: 16)),
+                backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+                automaticallyImplyLeading: false, // Oculta la flecha de regreso
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
               ),
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.grey),
@@ -231,7 +254,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 '¿Por qué nuestra app te parece $selectedOption?',
                 style: const TextStyle(fontSize: 14),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               TextField(
                 controller: _commentController,
                 maxLength: 150,
@@ -249,6 +272,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ElevatedButton(
               onPressed: () async {
                 await _saveFeedbackToFirestore(utilidadValue);
+                // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(

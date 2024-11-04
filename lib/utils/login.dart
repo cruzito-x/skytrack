@@ -29,9 +29,10 @@ class Login extends StatelessWidget {
     final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.white,
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
+          // Hacemos el contenido desplazable
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -93,7 +94,6 @@ class Login extends StatelessWidget {
                     );
 
                     Navigator.pushReplacement(
-                      // ignore: use_build_context_synchronously
                       context,
                       MaterialPageRoute(
                           builder: (context) => const FeedbackPage()),

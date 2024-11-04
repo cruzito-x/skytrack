@@ -86,10 +86,10 @@ class AboutOfPage extends StatelessWidget {
                 'Aguilar Hernández, Esaú Alexander', '25-2937-2020'),
             const SizedBox(height: 20),
             _buildDivider(),
-            _buildInfoRow('Año:', '2024'),
-            _buildInfoRow('App:', 'SkyTrack'),
-            _buildInfoRow('Materia:', 'ETPS3 - I'),
-            _buildInfoRow('Sección:', '01'),
+            _buildInfoRow('Año', '2024'),
+            _buildInfoRow('App', 'SkyTrack'),
+            _buildInfoRow('Materia', 'ETPS3 - T'),
+            _buildInfoRow('Sección', '01'),
             const Spacer(),
             const Center(
               child: Text(
