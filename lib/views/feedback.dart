@@ -224,19 +224,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppBar(
-                title: const Text('Brindanos tu opinión',
-                    style: TextStyle(fontSize: 16)),
-                backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-                automaticallyImplyLeading: false, // Oculta la flecha de regreso
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
+              const Text(
+                'Bríndanos tu opinión',
+                style: TextStyle(fontSize: 16),
               ),
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.grey),
