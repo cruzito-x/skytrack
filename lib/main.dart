@@ -360,9 +360,13 @@ class _MainScreenState extends State<MainScreen> {
                               child: const Text(
                                 'Próximos 7 días',
                                 style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color.fromRGBO(0, 51, 102, 1),
-                                    fontWeight: FontWeight.bold),
+                                  fontSize: 14,
+                                  color: Color.fromRGBO(0, 51, 102, 1),
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor:
+                                      Color.fromRGBO(0, 51, 102, 1),
+                                ),
                               ),
                             ),
                           ],

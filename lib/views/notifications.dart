@@ -173,47 +173,47 @@ class _NotificationsPageState extends State<NotificationsPage> {
             child: const Divider(),
           ),
           const SizedBox(height: 2),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
+          const Padding(
+            padding: EdgeInsets.all(15.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Configuración de notificaciones',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                _buildSwitch('Clima severo', _climaSevero, (value) {
-                  setState(() {
-                    _climaSevero = value;
-                    fetchNotifications();
-                  });
-                }),
-                const SizedBox(height: 6),
-                _buildSwitch('Cambios repentinos', _cambiosRepentinos, (value) {
-                  setState(() {
-                    _cambiosRepentinos = value;
-                    fetchNotifications();
-                  });
-                }),
-                const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Save notification preferences action
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(0, 51, 102, 1),
-                      foregroundColor: Colors.white,
-                      alignment: Alignment.bottomCenter,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 125),
-                      textStyle:
-                          const TextStyle(fontSize: 14, color: Colors.white),
-                    ),
-                    child: const Text('Guardar cambios'),
-                  ),
-                ),
-              ],
+              // children: [
+              //   const Text('Configuración de notificaciones',
+              //       style:
+              //           TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              //   const SizedBox(height: 8),
+              //   _buildSwitch('Clima severo', _climaSevero, (value) {
+              //     setState(() {
+              //       _climaSevero = value;
+              //       fetchNotifications();
+              //     });
+              //   }),
+              //   const SizedBox(height: 6),
+              //   _buildSwitch('Cambios repentinos', _cambiosRepentinos, (value) {
+              //     setState(() {
+              //       _cambiosRepentinos = value;
+              //       fetchNotifications();
+              //     });
+              //   }),
+              //   const SizedBox(height: 20),
+              //   Center(
+              //     child: ElevatedButton(
+              //       onPressed: () {
+              //         // Save notification preferences action
+              //       },
+              //       style: ElevatedButton.styleFrom(
+              //         backgroundColor: const Color.fromRGBO(0, 51, 102, 1),
+              //         foregroundColor: Colors.white,
+              //         alignment: Alignment.bottomCenter,
+              //         padding: const EdgeInsets.symmetric(
+              //             vertical: 16, horizontal: 125),
+              //         textStyle:
+              //             const TextStyle(fontSize: 14, color: Colors.white),
+              //       ),
+              //       child: const Text('Guardar cambios'),
+              //     ),
+              //   ),
+              // ],
             ),
           ),
         ],
